@@ -64,6 +64,23 @@ public class GridOccupancy : MonoBehaviour
         }
     }
 
+    public void AddWallsFromTilemap(Tilemap wallTilemap)
+    {
+        var bounds = wallTilemap.cellBounds;
+        for (int x = bounds.xMin; x < bounds.xMax; x++)
+        {
+            for (int y = bounds.yMin; y < bounds.yMax; y++)
+            {
+                var cell = new Vector3Int(x, y, 0);
+                var tile = wallTilemap.GetTile(cell);
+                if (tile != null)
+                {
+                    _blockedCells.Add(cell);
+                }
+            }
+        }
+    }
+
     public bool IsBlockedCell(Vector3Int cell)
     {
         // ¿Ü°û/³»ºÎ º® ¼¿ OR ÀÌ¹Ì ¿ÀºêÁ§Æ®°¡ ÀÖ´Â ¼¿

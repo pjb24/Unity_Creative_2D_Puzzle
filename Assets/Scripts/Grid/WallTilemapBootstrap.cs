@@ -13,6 +13,7 @@ public class WallTilemapBootstrap : MonoBehaviour
     private void Awake()
     {
         var tilemap = GetComponent<Tilemap>();
-        GridOccupancy.Instance.InitWallsFromTilemap(tilemap);
+        // GridOccupancy.Instance.InitWallsFromTilemap(tilemap);
+        GridOccupancy.Instance.AddWallsFromTilemap(tilemap);
     }
 }
