@@ -23,16 +23,22 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(PlayerPusher))]
 public class PlayerFreeMove : MonoBehaviour
 {
     public float moveSpeed = 5f;
+
+    private PlayerPusher _pusher;
 
     private Rigidbody2D _rb;
     private Vector2 _input;
     private Vector2 _facingDir = Vector2.up;
 
+    private Vector2 _filteredDir;
+
     private void Awake()
     {
+        _pusher = GetComponent<PlayerPusher>();
         _rb = GetComponent<Rigidbody2D>();
         gameObject.tag = "Player";
         _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -46,12 +52,17 @@ public class PlayerFreeMove : MonoBehaviour
         _input = _input.normalized;
 
         if (_input.sqrMagnitude > 0.01f)
+        {
             _facingDir = _input;
+            _pusher.SetFacingDir(Vector2Int.FloorToInt(_facingDir));
+        }
+
+        _filteredDir = _pusher.FilterMoveAndTryPush(_input);
     }
 
     private void FixedUpdate()
     {
-        var target = _rb.position + _input * moveSpeed * Time.fixedDeltaTime;
+        var target = _rb.position + _filteredDir * moveSpeed * Time.fixedDeltaTime;
         _rb.MovePosition(target); // 물리 기반 연속 이동
     }
 

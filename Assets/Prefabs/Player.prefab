@@ -10,12 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 6148714507155792723}
   - component: {fileID: 7038305874955177218}
-  - component: {fileID: 7557215951894265066}
   - component: {fileID: -4047825296696392161}
-  - component: {fileID: -5078231550870202374}
   - component: {fileID: -5496591757500474625}
   - component: {fileID: 7654766585381192252}
   - component: {fileID: -7343372755140958901}
+  - component: {fileID: 1840832638662317327}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -93,20 +92,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7557215951894265066
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7109915091710713406}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88ad0e8ee87834a48bc2c7a7bcbd9361, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _snapEveryFrameInEditor: 1
-  BlocksMovement: 1
 --- !u!61 &-4047825296696392161
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -153,21 +138,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &-5078231550870202374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7109915091710713406}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12dd113a337de2149b7f95c2c12e4bcf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveCooldown: 0.1
-  normalKeyCount: 0
-  hasSpecialKey: 0
 --- !u!114 &-5496591757500474625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d70ab2761a504d14886224166e45a96e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactDistance: 0.6
+  _interactRange: 0.8
   normalKeyCount: 0
   hasSpecialKey: 0
 --- !u!50 &7654766585381192252
@@ -223,3 +193,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+--- !u!114 &1840832638662317327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7109915091710713406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdae68755bfc6ce458b8151b5443c9cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interactRange: 0.8

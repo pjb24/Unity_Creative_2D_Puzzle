@@ -32,6 +32,8 @@ public class CarryableMirror : MonoBehaviour
         transform.localPosition = Vector3.up * 0.5f;
 
         _isCarried = true;
+        LaserWorldEvents.RaiseWorldChanged();
+
         Debug.Log($"CarryableMirror {name} picked up.");
     }
 
@@ -50,6 +52,8 @@ public class CarryableMirror : MonoBehaviour
 
         _isCarried = false;
         _carrier = null;
+
+        LaserWorldEvents.RaiseWorldChanged();
 
         Debug.Log($"CarryableMirror {name} dropped at {targetCell}.");
         return true;

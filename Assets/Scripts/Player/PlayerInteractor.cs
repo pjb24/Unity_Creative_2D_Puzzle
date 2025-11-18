@@ -8,8 +8,10 @@ using UnityEngine;
 
 public class PlayerInteractor : MonoBehaviour
 {
-    public float interactDistance = 0.6f;
+    [SerializeField] private float _interactRange = 0.8f;
+
     private PlayerFreeMove _move;
+    private PlayerPusher _pusher;
 
     private CarryableMirror _carriedMirror;
     public int normalKeyCount;
@@ -18,18 +20,24 @@ public class PlayerInteractor : MonoBehaviour
     private void Awake()
     {
         _move = GetComponent<PlayerFreeMove>();
+        _pusher = GetComponent<PlayerPusher>();
     }
 
     private void Update()
     {
+        // 예시: E 키 = 상호작용
         if (Input.GetKeyDown(KeyCode.E))
             Interact();
+
+        // 예시: R 키 = 거울 회전
+        if (Input.GetKeyDown(KeyCode.R))
+            RotateMirror();
     }
 
     // 플레이어 앞 셀 찾기
     private Vector3Int GetFrontCell()
     {
-        var worldPos = (Vector2)transform.position + _move.FacingDir.normalized * interactDistance;
+        var worldPos = (Vector2)transform.position + _move.FacingDir.normalized * _interactRange;
         return GridUtil.WorldToCell(worldPos);
     }
 
@@ -45,6 +53,14 @@ public class PlayerInteractor : MonoBehaviour
         {
             if (!occupancy.IsBlockedCell(cell) && _carriedMirror.TryDrop(cell))
                 _carriedMirror = null;
+
+            return;
+        }
+
+        if (_pusher.IsPushing)
+        {
+            _pusher.HandleInteract();
+
             return;
         }
 
@@ -56,6 +72,23 @@ public class PlayerInteractor : MonoBehaviour
         {
             carryable.PickUp(transform);
             _carriedMirror = carryable;
+
+            return;
+        }
+
+        var pushable = obj.GetComponent<PushableMirror>();
+        if (pushable != null)
+        {
+            _pusher.HandleInteract();
+
+            return;
+        }
+
+        var pathMirror = obj.GetComponent<PathMirror>();
+        if (pathMirror != null)
+        {
+            pathMirror.TryMoveNext();
+
             return;
         }
 
@@ -64,6 +97,7 @@ public class PlayerInteractor : MonoBehaviour
         if (door != null && !door.IsOpen)
         {
             TryOpenDoor(door);
+
             return;
         }
     }
@@ -82,5 +116,19 @@ public class PlayerInteractor : MonoBehaviour
                 door.TryOpenWithSpecialKey(hasSpecialKey);
                 break;
         }
+    }
+
+    private void RotateMirror()
+    {
+        var cell = GetFrontCell();
+        var occupancy = GridOccupancy.Instance;
+        var obj = occupancy.GetOccupant(cell);
+
+        if (obj == null) return;
+
+        var mirror = obj.GetComponent<Mirror>();
+        if (mirror == null) return;
+
+        mirror.Rotate45();
     }
 }

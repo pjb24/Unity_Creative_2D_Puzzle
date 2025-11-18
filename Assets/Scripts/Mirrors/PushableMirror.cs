@@ -1,36 +1,29 @@
 ///
-/// Push 요청이 들어오면, 앞 칸이 비었는지만 보고 GridOccupancy를 통해 이동
-/// 
-/// 미러는 그리드 스냅 오브젝트 (GridObject).
-/// 플레이어는 Rigidbody2D로 자유롭게 이동.
-/// 플레이어가 미러에 부딪혀서 “밀어붙이는 방향”이 생기면
-/// → 그 방향의 셀로 미러를 1타일 밀어주는 그리드 이동 + 살짝 Lerp 애니메이션.
-/// 
-/// 
 /// 미러는 BoxCollider2D + Rigidbody2D(kinematic) + PushableMirror + GridObject.
 /// 플레이어는 Rigidbody2D(dynamic) + Collider2D.
-/// 플레이어가 미러를 향해 움직여서 부딪히면, 미러가 그리드 한 칸 Lerp로 밀린다.
 /// 
 /// 
-/// 연속 이동 플레이어 기준으로,
-/// OnCollisionStay2D에서 “플레이어가 미러를 정면에서 밀고 있는가?” 판정.
-/// Grid 셀 단위로 이동 + Lerp 애니메이션.
-/// Push는 GridOccupancy와 타일 좌표를 통해 퍼즐 규칙과 일관성 유지.
+/// Pushable 거울
+/// - Interact 시 Player에 "부착" (pushing 상태).
+/// - Player가 바라보던 방향의 축(axis)으로만 같이 이동.
 ///
 
-using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(GridObject))]
 [RequireComponent(typeof(Rigidbody2D))]
 public class PushableMirror : MonoBehaviour
 {
-    public float pushDuration = 0.1f;      // 한 타일 밀리는 시간
-    public float minDotToPush = 0.6f;      // 플레이어가 얼마나 “정면에서” 밀어야 인정할지
-
     private GridObject _gridObj;
     private Rigidbody2D _rb;
-    private bool _isMoving;
+
+    private bool _isAttached;
+    public bool IsAttached => _isAttached;
+
+    private Transform _pusher;
+    private Vector2Int _axis;   // (1,0) 또는 (0,1) 중 하나 (X축 or Y축)
+
+    private Vector3 _localOffset;   // 플레이어 기준 위치(앞 칸)
 
     private void Awake()
     {
@@ -39,113 +32,110 @@ public class PushableMirror : MonoBehaviour
         _rb.bodyType = RigidbodyType2D.Kinematic;            // 직접 위치 제어
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
+    /// <summary>
+    /// 푸시 시작. 바라보는 방향 dir 기준으로 axis 결정.
+    /// dir 은 (1,0),(-1,0),(0,1),(0,-1) 중 하나라고 가정.
+    /// 
+    /// 거울을 pusher의 자식으로 붙여서 화면상으로 같이 움직이게 함
+    /// GridOccupancy에서는 일단 제거 (이동 중 상태)
+    /// </summary>
+    public bool BeginPush(Transform pusher, Vector2Int facingDir)
     {
-        if (_isMoving) return;
-        if (!collision.collider.CompareTag("Player")) return;
+        if (_isAttached) return false;
+        if (facingDir == Vector2Int.zero) return false;
 
-        var playerMove = collision.collider.GetComponent<PlayerFreeMove>();
-        if (playerMove == null) return;
+        // 축만 가져간다. (X or Y)
+        _axis = Mathf.Abs(facingDir.x) > 0
+            ? new Vector2Int(1, 0)
+            : new Vector2Int(0, 1);
 
-        // 플레이어가 어떤 방향으로 움직이고 있는지
-        Vector2 playerDir = playerMove.FacingDir.normalized;
-        if (playerDir.sqrMagnitude < 0.01f) return;
+        // 기존 셀 점유 해제 (이동 중 상태로 취급)
+        GridOccupancy.Instance.Unregister(_gridObj.CurrentCell);
 
-        // 플레이어 → 미러 방향 벡터
-        Vector2 toMirror = (Vector2)transform.position - (Vector2)collision.transform.position;
-        toMirror.Normalize();
+        _pusher = pusher;
+        _isAttached = true;
 
-        // 플레이어가 미러 쪽으로 밀고 있는지 확인 (내적)
-        float dot = Vector2.Dot(playerDir, toMirror);
-        if (dot < minDotToPush) return; // 정면에서 밀어붙이는 상황이 아니면 무시
+        // 플레이어 앞 한 칸 정도로 붙여두는 오프셋
+        _localOffset = new Vector3(facingDir.x * 1.1f, facingDir.y * 1.1f, 0f);
+        transform.SetParent(_pusher);
+        transform.localPosition = _localOffset;
 
-        // 그리드 기준으로 어떤 방향으로 밀릴지 결정
-        Vector2Int pushDir = GetCardinalDirection(playerDir);
-        if (pushDir == Vector2Int.zero) return;
+        Debug.Log($"PushableMirror {name} BeginPush. Axis={_axis}");
 
-        TryStartPush(pushDir);
-    }
-
-    private Vector2Int GetCardinalDirection(Vector2 dir)
-    {
-        // X/Y 중 더 큰 축으로 정규화해서 4방향으로 스냅
-        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-            return dir.x > 0 ? Vector2Int.right : Vector2Int.left;
-        else if (Mathf.Abs(dir.y) > 0.01f)
-            return dir.y > 0 ? Vector2Int.up : Vector2Int.down;
-        return Vector2Int.zero;
-    }
-
-    private void TryStartPush(Vector2Int dir)
-    {
-        if (_isMoving) return;
-
-        var occ = GridOccupancy.Instance;
-        Vector3Int currentCell = _gridObj.CurrentCell;
-        Vector3Int targetCell = currentCell + new Vector3Int(dir.x, dir.y, 0);
-
-        // 타겟 셀이 막혀 있으면 밀지 않음
-        if (occ.IsBlockedCell(targetCell))
-            return;
-
-        StartCoroutine(PushRoutine(currentCell, targetCell));
-    }
-
-    private IEnumerator PushRoutine(Vector3Int fromCell, Vector3Int toCell)
-    {
-        _isMoving = true;
-
-        Vector3 startPos = GridUtil.CellToWorldCenter(fromCell);
-        Vector3 endPos = GridUtil.CellToWorldCenter(toCell);
-        float t = 0f;
-
-        // 밀리는 동안 그리드 점유는 "도착 시점"에 업데이트
-        // (필요하면 시작할 때 임시 점유 예약 로직을 추가 가능)
-        while (t < pushDuration)
-        {
-            t += Time.deltaTime;
-            float normalized = Mathf.Clamp01(t / pushDuration);
-            Vector3 pos = Vector3.Lerp(startPos, endPos, normalized);
-            _rb.MovePosition(pos);
-            yield return null;
-        }
-
-        // 마지막에 GridOccupancy 상의 셀 정보 업데이트 + 위치 스냅
-        GridOccupancy.Instance.TryMove(_gridObj, toCell);
-
-        OnPushFinished();
-
-        _isMoving = false;
+        return true;
     }
 
     /// <summary>
-    /// dir: 플레이어가 미는 방향 (예: (1,0), (0,1) 등)
+    /// 푸시 종료.
+    /// - 부모 해제
+    /// - 최종 월드 위치 기준 셀을 계산해서 다시 GridOccupancy에 등록
     /// </summary>
-    public bool TryPush(Vector2Int dir)
+    public void EndPush()
     {
-        var current = _gridObj.CurrentCell;
-        var target = current + new Vector3Int(dir.x, dir.y, 0);
+        if (!_isAttached) return;
 
-        if (GridOccupancy.Instance.IsOccupied(target))
+        _isAttached = false;
+
+        // 부모 해제, 현재 월드 좌표 유지
+        transform.SetParent(null);
+
+        // 최종 위치를 그리드에 스냅해서 셀 등록
+        var worldPos = transform.position;
+        var targetCell = GridUtil.WorldToCell(worldPos);
+
+        if (GridOccupancy.Instance.IsOccupied(targetCell))
         {
-            Debug.Log($"Cannot push mirror {name}: target cell occupied.");
+            // 이 상황이 거슬리면, 한 칸 뒤로 밀거나, Push를 막는 방향으로 정책 수정
+            Debug.LogWarning($"PushableMirror {name} EndPush: targetCell {targetCell} 이미 점유 중.");
+        }
+        else
+        {
+            GridOccupancy.Instance.TryRegister(_gridObj, targetCell);
+        }
+
+        _pusher = null;
+
+        LaserWorldEvents.RaiseWorldChanged();
+
+        Debug.Log($"PushableMirror {name} EndPush. Registered at {targetCell}");
+    }
+
+    /// <summary>
+    /// 플레이어가 deltaCell 만큼 이동하려 할 때
+    /// - 이 방향이 현재 axis와 맞는지
+    /// - 거울이 그 방향으로 이동해도 되는지(앞쪽 셀에 벽/장애물 있는지) 만 판단
+    /// * 여기서는 GridOccupancy 등록/해제를 하지 않는다 *
+    /// </summary>
+    public bool CanMoveWithPusher(Vector3Int deltaCell)
+    {
+        if (!_isAttached) return true;  // 푸시 중이 아니면 거울은 관여 X
+
+        // 축과 안 맞는 방향이면 못 움직임
+        if (_axis.x != 0 && deltaCell.y != 0) return false;
+        if (_axis.y != 0 && deltaCell.x != 0) return false;
+
+        if (deltaCell == Vector3Int.zero) return true;
+
+        // 현재 거울이 있는 셀 = 월드 포지션 기준
+        var currentCell = GridUtil.WorldToCell(transform.position);
+        var targetCell = currentCell + deltaCell;
+
+        // 앞 셀에 벽/장치 등으로 "막혀 있는지"만 체크
+        if (GridOccupancy.Instance.IsOccupied(targetCell))
+        {
+            Debug.Log($"PushableMirror {name}: targetCell {targetCell} 막힘, 이동 불가.");
             return false;
         }
 
-        var moved = GridOccupancy.Instance.TryMove(_gridObj, target);
-        if (moved)
-        {
-            Debug.Log($"Pushed mirror {name} to {target}.");
-        }
-
-        return moved;
+        // 이동은 Player + 자식 구조가 담당하므로 여기서는 OK만 반환
+        return true;
     }
 
-    // 예: MirrorMover에서 한 칸 밀기 끝난 시점
-    private void OnPushFinished()
+    /// <summary>
+    /// 현재 축 반환. (1,0) or (0,1)
+    /// </summary>
+    public Vector2Int GetAxis()
     {
-        // 위치 스냅 등 처리 후
-        LaserWorldEvents.RaiseWorldChanged();
+        return _axis;
     }
-
 }
