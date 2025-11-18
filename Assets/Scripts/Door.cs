@@ -78,7 +78,12 @@ public class Door : MonoBehaviour
     public void Open()
     {
         IsOpen = true;
+
         // 시각적 표현은 나중에: 색 변경, 애니메이션 등
+
+        // Collider On/Off 등 처리 후
+        LaserWorldEvents.RaiseWorldChanged();
+
         Debug.Log($"Door {name} opened.");
     }
 
@@ -135,7 +140,7 @@ public class Door : MonoBehaviour
         if (_targetRoom != null)
         {
             Gizmos.color = Color.magenta;
-            Gizmos.DrawLine(transform.position, _targetRoom.transform.position);
+            Gizmos.DrawLine(transform.position, _targetRoom.CenterOfRoom);
         }
     }
 #endif

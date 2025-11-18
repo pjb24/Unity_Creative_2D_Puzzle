@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1896803949833458858}
   - component: {fileID: -1245093740253361658}
   - component: {fileID: 4984106539472462118}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Door_Open
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 7594366308977808889}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -102,6 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88ad0e8ee87834a48bc2c7a7bcbd9361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _snapEveryFrameInEditor: 1
   BlocksMovement: 1
 --- !u!61 &-1245093740253361658
 BoxCollider2D:
@@ -161,4 +162,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9ca5677128da824a8ff7d8d6e4406f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _doorId: 
+  _room: {fileID: 0}
+  _targetRoom: {fileID: 0}
+  _targetDoorId: 
   doorType: 0
+  _spawnOffset: {x: 0, y: 0}

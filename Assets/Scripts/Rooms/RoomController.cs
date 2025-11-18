@@ -21,6 +21,9 @@ public class RoomController : MonoBehaviour
     [Header("Doors")]
     [SerializeField] private List<Door> _doors = new List<Door>();
 
+    private Vector3 _centerOfRoom;
+    public Vector3 CenterOfRoom => _centerOfRoom;
+
     public string RoomId => _roomId;
     public IReadOnlyList<Door> Doors => _doors;
 
@@ -65,6 +68,11 @@ public class RoomController : MonoBehaviour
         // 카메라 중심 표시
         Gizmos.color = Color.cyan;
         Gizmos.DrawSphere(GetCameraCenterWorld(), 0.2f);
+    }
+
+    private void OnValidate()
+    {
+        _centerOfRoom = _cameraCenterOffset;
     }
 #endif
 }

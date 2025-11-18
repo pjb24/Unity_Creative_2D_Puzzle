@@ -138,6 +138,10 @@ public class MovingFloor : MonoBehaviour
 
         // 마지막 위치 스냅
         _rb.position = to;
+
+        // FIXME
+        // ToDo: 이동 바닥이 한 타일 이동 완료했을 때로 변경해야함.
+        OnMovePlatformFinished();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -196,5 +200,10 @@ public class MovingFloor : MonoBehaviour
         // 벗어나면 부모 해제
         if (other.transform.parent == transform)
             other.transform.SetParent(null);
+    }
+
+    private void OnMovePlatformFinished()
+    {
+        LaserWorldEvents.RaiseWorldChanged();
     }
 }

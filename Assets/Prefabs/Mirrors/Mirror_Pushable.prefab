@@ -14,7 +14,8 @@ GameObject:
   - component: {fileID: 6716670268352720369}
   - component: {fileID: 120206436254246365}
   - component: {fileID: 4116270517140054968}
-  m_Layer: 0
+  - component: {fileID: 972919653017196237}
+  m_Layer: 9
   m_Name: Mirror_Pushable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -192,3 +193,16 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &972919653017196237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5753697389486976439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24622df3582d1354e91eb88757fd7042, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _type: 1

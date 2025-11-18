@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 
+[DefaultExecutionOrder(-5)]
 public class RoomManager : MonoBehaviour
 {
     public static RoomManager Instance { get; private set; }

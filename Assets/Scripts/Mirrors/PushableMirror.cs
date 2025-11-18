@@ -113,6 +113,8 @@ public class PushableMirror : MonoBehaviour
         // 마지막에 GridOccupancy 상의 셀 정보 업데이트 + 위치 스냅
         GridOccupancy.Instance.TryMove(_gridObj, toCell);
 
+        OnPushFinished();
+
         _isMoving = false;
     }
 
@@ -138,4 +140,12 @@ public class PushableMirror : MonoBehaviour
 
         return moved;
     }
+
+    // 예: MirrorMover에서 한 칸 밀기 끝난 시점
+    private void OnPushFinished()
+    {
+        // 위치 스냅 등 처리 후
+        LaserWorldEvents.RaiseWorldChanged();
+    }
+
 }
