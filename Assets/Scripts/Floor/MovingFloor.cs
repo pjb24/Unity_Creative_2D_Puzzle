@@ -260,6 +260,9 @@ public class MovingFloor : MonoBehaviour
         var oldCell = _gridObj.CurrentCell;
         GridOccupancy.Instance?.TryRegister(_gridObj, _endCell);
 
+        // 탑승객 재등록
+        ReRegisterPassengersToGrid();
+
         // 3) 외부 시스템(예: 레이저 리캐스트, 경로 동기화 등) 통지 필요 시 여기서 호출
         LaserWorldEvents.RaiseWorldChanged();
 
@@ -376,6 +379,24 @@ public class MovingFloor : MonoBehaviour
             {
                 player.SetExternalLock(lockOn);
             }
+        }
+    }
+
+    private void ReRegisterPassengersToGrid()
+    {
+        foreach (var rb in _passengers)
+        {
+            if (rb == null) continue;
+
+            // GridObject가 붙은 오브젝트만 재등록
+            var gobj = rb.GetComponent<GridObject>();
+            if (gobj == null) continue;
+
+            Vector3Int newCell = GridUtil.WorldToCell(rb.position);
+            Vector3Int oldCell = gobj.CurrentCell;
+
+            GridOccupancy.Instance?.Unregister(oldCell);
+            GridOccupancy.Instance?.TryRegister(gobj, newCell);
         }
     }
 }

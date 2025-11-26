@@ -12,11 +12,21 @@ public class CarryableMirror : MonoBehaviour
     private GridObject _gridObj;
     private bool _isCarried;
     public bool IsCarried => _isCarried;
+    
     private Transform _carrier; // 보통 Player transform
+    private Rigidbody2D _rb;
+
+    private Collider2D _collider;
 
     private void Awake()
     {
         _gridObj = GetComponent<GridObject>();
+
+        _rb = GetComponent<Rigidbody2D>();
+        _rb.bodyType = RigidbodyType2D.Kinematic;            // 직접 위치 제어
+        _rb.gravityScale = 0f;
+
+        _collider = GetComponent<Collider2D>();
     }
 
     public void PickUp(Transform carrier)
@@ -25,6 +35,8 @@ public class CarryableMirror : MonoBehaviour
 
         // 그리드 점유 해제
         GridOccupancy.Instance.Unregister(_gridObj.CurrentCell);
+
+        _collider.enabled = false;
 
         _carrier = carrier;
         transform.SetParent(_carrier);
@@ -49,6 +61,8 @@ public class CarryableMirror : MonoBehaviour
 
         transform.SetParent(null);
         GridOccupancy.Instance.TryRegister(_gridObj, targetCell);
+
+        _collider.enabled = true;
 
         _isCarried = false;
         _carrier = null;

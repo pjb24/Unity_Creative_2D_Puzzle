@@ -113,8 +113,8 @@ MonoBehaviour:
     m_Bits: 4294967295
   _blockingMask:
     serializedVersion: 2
-    m_Bits: 1846
-  _usePrecastClamp: 1
+    m_Bits: 4294967295
+  _usePrecastClamp: 0
   _triggerCollector: {fileID: 5634531216905049998}
   _moveOnStart: 0
   _showGizmos: 1
@@ -204,5 +204,5 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.95, y: 0.95}
   m_EdgeRadius: 0

@@ -155,7 +155,7 @@ public class LaserManager : MonoBehaviour
             else if (closest == E_HitObjectType.Mirror)
             {
                 // 먼저 거울에 맞음
-                Vector3 hitPos = hitMirror.point;
+                Vector3 hitPos = hitMirror.point + (dir * 0.5f);
                 points.Add(hitPos);
 
                 // 새로운 방향 계산

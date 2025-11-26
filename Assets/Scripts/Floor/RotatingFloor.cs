@@ -240,6 +240,10 @@ public class RotatingFloor : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, 0, NormalizeToEuler(_rawCurrentAngle));
 
         SnapTilesToGrid();
+        
+        // 탑승객 재등록
+        ReRegisterPassengersToGrid();
+
         UpdatePivotOccupancy();
 
         SetPlayerInputLock(false);
@@ -453,6 +457,24 @@ public class RotatingFloor : MonoBehaviour
             {
                 player.SetExternalLock(lockOn);
             }
+        }
+    }
+
+    private void ReRegisterPassengersToGrid()
+    {
+        foreach (var rb in _passengers)
+        {
+            if (rb == null) continue;
+
+            // GridObject가 붙은 오브젝트만 재등록
+            var gobj = rb.GetComponent<GridObject>();
+            if (gobj == null) continue;
+
+            Vector3Int newCell = GridUtil.WorldToCell(rb.position);
+            Vector3Int oldCell = gobj.CurrentCell;
+
+            GridOccupancy.Instance?.Unregister(oldCell);
+            GridOccupancy.Instance?.TryRegister(gobj, newCell);
         }
     }
 }
