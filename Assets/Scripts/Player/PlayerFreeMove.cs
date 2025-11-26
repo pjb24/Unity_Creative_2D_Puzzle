@@ -36,6 +36,8 @@ public class PlayerFreeMove : MonoBehaviour
 
     private Vector2 _filteredDir;
 
+    private bool _lockMovement = false;
+
     private void Awake()
     {
         _pusher = GetComponent<PlayerPusher>();
@@ -62,9 +64,19 @@ public class PlayerFreeMove : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_lockMovement)
+        {
+            return;
+        }
+
         var target = _rb.position + _filteredDir * moveSpeed * Time.fixedDeltaTime;
         _rb.MovePosition(target); // 물리 기반 연속 이동
     }
 
     public Vector2 FacingDir => _facingDir;
+
+    public void SetExternalLock(bool flag)
+    {
+        _lockMovement = flag;
+    }
 }

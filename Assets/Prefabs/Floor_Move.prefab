@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2055798494512801603}
   - component: {fileID: 5984666253495258662}
   - component: {fileID: -395131583907962373}
+  - component: {fileID: 5634531216905049998}
   m_Layer: 0
   m_Name: Floor_Move
   m_TagString: Untagged
@@ -102,11 +103,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f0d2f54b55517d49bc3eb640ce2c583, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startCell: {x: 0, y: 0, z: 0}
-  endCell: {x: 0, y: 0, z: 0}
-  moveDuration: 1
-  loop: 1
-  playOnStart: 0
+  _startCell: {x: 0, y: 0, z: 0}
+  _endCell: {x: 0, y: 0, z: 0}
+  _moveMode: 0
+  _moveDuration: 1
+  _moveSpeed: 3
+  _passengerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  _blockingMask:
+    serializedVersion: 2
+    m_Bits: 1846
+  _usePrecastClamp: 1
+  _triggerCollector: {fileID: 5634531216905049998}
+  _moveOnStart: 0
+  _showGizmos: 1
+  _gizmoPathColor: {r: 0.2, g: 0.9, b: 1, a: 0.8}
 --- !u!50 &5984666253495258662
 Rigidbody2D:
   serializedVersion: 5
@@ -148,3 +160,49 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _snapEveryFrameInEditor: 1
   BlocksMovement: 1
+--- !u!61 &5634531216905049998
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2392920373371352802}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
