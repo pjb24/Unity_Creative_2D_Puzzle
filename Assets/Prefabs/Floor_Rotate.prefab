@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3731195105098852351}
   - component: {fileID: -3042289259161926025}
   - component: {fileID: -1205083871401427816}
+  - component: {fileID: 1156478923647527300}
   m_Layer: 0
   m_Name: Floor_Rotate
   m_TagString: Untagged
@@ -101,9 +102,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb104b7d9e1151e429641958539a9eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotateAngle: 90
-  rotateDuration: 0.5
-  playOnStart: 0
+  _pivotCell: {x: 0, y: 0, z: 0}
+  _angleStep: 90
+  _rotateDuration: 0.5
+  _snapMode: 0
+  _clockwise: 1
+  _passengerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  _usePrecastClamp: 1
+  _blockingMask:
+    serializedVersion: 2
+    m_Bits: 1846
+  _snapPivotOnAwake: 0
+  _rotateOnAwake: 0
+  _showGizmos: 1
+  _gizmoPivotColor: {r: 1, g: 0.8, b: 0.15, a: 0.9}
+  _gizmoArcColor: {r: 0.2, g: 0.9, b: 1, a: 0.8}
+  _triggerCollector: {fileID: 1156478923647527300}
 --- !u!114 &-1205083871401427816
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,3 +134,49 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _snapEveryFrameInEditor: 1
   BlocksMovement: 1
+--- !u!61 &1156478923647527300
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8648324210662629277}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
