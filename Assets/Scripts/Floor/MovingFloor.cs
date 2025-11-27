@@ -1,52 +1,47 @@
+ï»¿///
+/// MovingFloor
 /// 
-/// ¹ßÆÇ(¹Ù´Ú)Àº ±×¸®µå ±âÁØÀ¸·Î ÀÌµ¿ÇÏÁö¸¸, ³»ºÎÀûÀ¸·Î´Â
-/// Rigidbody2D(kinematic)·Î Lerp.
-/// ¹ßÆÇÀÌ ÇÑ ÇÁ·¹ÀÓ µ¿¾È ÀÌµ¿ÇÑ delta¸¦ °è»êÇØ¼­,
-/// ±× À§¿¡ ¿Ã¶óÅº Rigidbody2D µé¿¡°Ô °°Àº delta¸¦ MovePositionÀ¸·Î ´õÇØÁÜ.
-/// ÀÌ·¸°Ô ÇÏ¸é ÇÃ·¹ÀÌ¾î°¡ ÀÚÀ¯ ÀÌµ¿ ÁßÀÌ¾îµµ ¹ßÆÇ°ú ÇÔ²² ¡°²öÀûÇÏ°Ô¡± µû¶ó°£´Ù.
+/// ì´ë™ ë°©ì‹
+/// - Rigidbody2D (Kinematic) + Lerp ê¸°ë°˜ ì´ë™
+/// - ë§¤ í”„ë ˆì„ ì´ë™í•œ deltaë¥¼ ê³„ì‚°í•˜ì—¬ ìœ„ì— ì˜¬ë¼íƒ„ Rigidbody2D ë“¤ì—ê²Œ
+/// MovePositionìœ¼ë¡œ ë™ì¼í•˜ê²Œ ë”í•¨
+/// â†’ ììœ  ì´ë™ ì¤‘ì¸ í”Œë ˆì´ì–´ë„ ìì—°ìŠ¤ëŸ½ê²Œ â€œë‹¬ë¼ë¶™ì–´ ì´ë™â€
 /// 
+/// êµ¬ì„± ìš”ì†Œ
+/// - Rigidbody2D (Kinematic)
+/// - BoxCollider2D (IsTrigger = true) â†’ ìœ„ì— í”Œë ˆì´ì–´ ê°ì§€
+/// - MovingFloor ìŠ¤í¬ë¦½íŠ¸
+/// 	- startCell, endCell: ì¸ìŠ¤í™í„°ì—ì„œ íƒ€ì¼ ì¢Œí‘œë¡œ ì„¤ì •
 /// 
-/// MovingFloor ¿ÀºêÁ§Æ®:
-/// Rigidbody2D (Body Type: Kinematic)
-/// BoxCollider2D (IsTrigger=true, ¹ßÆÇ À§¿¡ ÇÃ·¹ÀÌ¾î°¡ ¿Ã¶óÅ» ¼ö ÀÖ°Ô)
-/// MovingFloor ½ºÅ©¸³Æ®
-/// startCell, endCellÀº ÀÎ½ºÆåÅÍ¿¡¼­ Å¸ÀÏ ÁÂÇ¥·Î ¸ÂÃç¼­ ÀÔ·Â.
-/// 
-/// ÇÃ·¹ÀÌ¾î:
-/// ±âÁ¸ Rigidbody2D(dynamic) + Collider2D.
-/// ¹ßÆÇ À§¿¡¼­ ÀÚ¿¬½º·´°Ô °°ÀÌ ÀÌµ¿ÇÑ´Ù.
-/// 
-/// 
-/// ¹ßÆÇ ÀÚÃ¼´Â Rigidbody2D(kinematic) + Lerp ÀÌµ¿.
-/// ÇÑ ÇÁ·¹ÀÓ delta¸¦ À§¿¡ ÀÖ´Â Rigidbody2D¿¡°Ô ±×´ë·Î ´õÇØÁà¼­
-/// ÇÃ·¹ÀÌ¾î°¡ ´Ş¶óºÙÀº °ÍÃ³·³ µû¶ó°¡°Ô ¸¸µé±â.
+/// í”Œë ˆì´ì–´ ìª½
+/// - Rigidbody2D (Dynamic) + Collider2D
+/// - ë°œíŒ ìœ„ì— ìˆìœ¼ë©´ delta ë§Œí¼ ì´ë™
 /// 
 /// 
-/// MovingFloor (GridObject / GridOccupancy / GridUtil ¿¬µ¿, ÀÌµ¿ ¸ğµå ¼±ÅÃ Áö¿ø)
-/// - ÀÌµ¿ ¸ğµå:
-///   1) DurationToTarget: ÁöÁ¤ ½Ã°£(moveDuration) µ¿¾È ½ÃÀÛ¡æ¸ñÇ¥±îÁö º¸°£(Lerp)
-///   2) SpeedUnitsPerSecond: ÃÊ´ç °Å¸®(moveSpeed)·Î µî¼Ó ÀÌµ¿(¸ñÇ¥ µµ´Ş ½Ã Á¾·á)
-/// - Á¾·á ½Ã ¼¿ ½º³À + GridOccupancy Á¡À¯ °»½Å
-/// - Å¾½Â°´(Rigidbody2D) µ¨Å¸ µ¿±â ÀÌµ¿ (Ãæµ¹ ½Ã Å¾½Â°´¸¸ Á¤Áö, ¹Ù´ÚÀº °è¼Ó ÀÌµ¿)
-/// - ÀÌµ¿ Áß ÇÃ·¹ÀÌ¾î ÀÔ·Â Lock (PlayerController.SetExternalLock)
-/// - GridObject.CellÀ» ´ÜÀÏ ±âÁØÀ¸·Î »ç¿ë, ½º³À/Á¡À¯´Â GridOccupancy·Î Ã³¸®
+/// ìŠ¤í¬ë¦½íŠ¸ ì‚¬ì–‘
 /// 
-/// ¿ä±¸ »çÇ×(ÇÁ·ÎÁ§Æ® ±¸¼º¿¡ ¸ÂÃç ÇÔ¼ö¸í¸¸ ¸ÂÃß¸é ±×´ë·Î »ç¿ë °¡´É):
-/// - GridObject
-///     .CurrentCell : Vector3Int    // ÇöÀç ±×¸®µå ¼¿
-/// - GridOccupancy (½Ì±ÛÅæ)
-///     .Instance
-///     .TryRegister(GridObject obj, Vector3Int cell)
-///     .Unregister(Vector3Int cell)
-/// - GridUtil (Á¤Àû)
-///     .CellToWorldCenter(Vector3Int cell) : Vector3
-///     .WorldToCell(Vector3 world)         : Vector3Int
+/// Grid ì—°ë™
+/// - GridObject, GridOccupancy, GridUtil ì‚¬ìš©
+/// - GridObject.CurrentCell ê¸°ì¤€ìœ¼ë¡œ ì…€ ì¢Œí‘œ ê´€ë¦¬
+/// - GridOccupancyë¡œ ì ìœ  ë“±ë¡/í•´ì œ
+/// - GridUtilë¡œ Cellâ†”World ë³€í™˜
 /// 
-/// »ç¿ë¹ı:
-/// 1) GridObject¸¦ °°Àº ¿ÀºêÁ§Æ®¿¡ ºÎÂø(ÇÊ¼ö)
-/// 2) º»Ã¼ Collider2D + 'Å¾½Â °¨Áö¿ë' Trigger Collider2D Ãß°¡ ±ÇÀå
-/// 3) startCell/endCell ÁöÁ¤ ÈÄ TriggerMove() È£Ãâ
+/// ì´ë™ ëª¨ë“œ
+/// 1) DurationToTarget: ì§€ì • ì‹œê°„(moveDuration) ë™ì•ˆ Lerp ì´ë™
+/// 2) SpeedUnitsPerSecond: ì´ˆë‹¹ ê±°ë¦¬(moveSpeed)ë¡œ ë“±ì† ì´ë™
 /// 
+/// ê¸°ëŠ¥
+/// - ë§¤ í”„ë ˆì„ Trigger/OverlapBoxë¡œ ìŠ¹ê° ìˆ˜ì§‘
+/// - ì—”ë“œ í‰ë©´ í´ë¨í”„ ì ìš© â€” ëª©í‘œ ì´ˆê³¼ ì´ë™ ë°©ì§€
+/// - ì¢…ë£Œ ì‹œ ìì‹  ë° ìŠ¹ê° GridOccupancy ê°±ì‹  + ì…€ ìŠ¤ëƒ…
+/// - ìŠ¹ê° Rigidbody2D ë¸íƒ€ ì´ë™ (ì¶©ëŒ ì‹œ ìŠ¹ê°ë§Œ ì •ì§€, ë°œíŒì€ ê³„ì† ì´ë™)
+/// - ì´ë™ ì¤‘ í”Œë ˆì´ì–´ ì…ë ¥ Lock (PlayerController.SetExternalLock)
+/// 
+/// ì‚¬ìš© ìˆœì„œ
+/// 1) GridObject ì»´í¬ë„ŒíŠ¸ ë¶€ì°© (í•„ìˆ˜)
+/// 2) ë³¸ì²´ Collider + â€˜íƒ‘ìŠ¹ ê°ì§€ìš© Trigger Colliderâ€™ ì¶”ê°€
+/// 3) startCell / endCell ì„¤ì • í›„ TriggerMove() í˜¸ì¶œ
+///
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -58,37 +53,37 @@ public class MovingFloor : MonoBehaviour
 {
     public enum E_MoveMode
     {
-        DurationToTarget,     // ÁöÁ¤ ½Ã°£ ³» ¸ñÇ¥±îÁö ÀÌµ¿ (Lerp)
-        SpeedUnitsPerSecond,  // ÃÊ´ç °Å¸®(¼Óµµ)·Î ÀÌµ¿ (MoveTowards)
+        DurationToTarget,     // ì§€ì • ì‹œê°„ ë‚´ ëª©í‘œê¹Œì§€ ì´ë™ (Lerp)
+        SpeedUnitsPerSecond,  // ì´ˆë‹¹ ê±°ë¦¬(ì†ë„)ë¡œ ì´ë™ (MoveTowards)
     }
 
     [Header("Grid Path")]
-    [Tooltip("½ÃÀÛ ¼¿ (¾À ¹èÄ¡ ±âÁØ)")]
+    [Tooltip("ì‹œì‘ ì…€ (ì”¬ ë°°ì¹˜ ê¸°ì¤€)")]
     [SerializeField] private Vector3Int _startCell;
-    [Tooltip("µµÂø ¼¿")]
+    [Tooltip("ë„ì°© ì…€")]
     [SerializeField] private Vector3Int _endCell;
 
     [Header("Move Mode")]
     [SerializeField] private E_MoveMode _moveMode = E_MoveMode.DurationToTarget;
-    [Tooltip("[DurationToTarget] ¸ñÇ¥±îÁö °É¸®´Â ½Ã°£(ÃÊ)")]
+    [Tooltip("[DurationToTarget] ëª©í‘œê¹Œì§€ ê±¸ë¦¬ëŠ” ì‹œê°„(ì´ˆ)")]
     [ShowIfAny(nameof(_moveMode), E_MoveMode.DurationToTarget)]
     [SerializeField] private float _moveDuration = 1.0f;
-    [Tooltip("[SpeedUnitsPerSecond] ÃÊ´ç ÀÌµ¿ °Å¸®(À¯´Ö/ÃÊ)")]
+    [Tooltip("[SpeedUnitsPerSecond] ì´ˆë‹¹ ì´ë™ ê±°ë¦¬(ìœ ë‹›/ì´ˆ)")]
     [ShowIfAny(nameof(_moveMode), E_MoveMode.SpeedUnitsPerSecond)]
     [SerializeField] private float _moveSpeed = 3.0f;
 
     [Header("Passengers")]
-    [Tooltip("Å¾½Â°´À¸·Î Ãë±ŞÇÒ ·¹ÀÌ¾î(ºñ¿ì¸é ÀüÃ¼)")]
+    [Tooltip("íƒ‘ìŠ¹ê°ìœ¼ë¡œ ì·¨ê¸‰í•  ë ˆì´ì–´(ë¹„ìš°ë©´ ì „ì²´)")]
     [SerializeField] private LayerMask _passengerMask = ~0;
-    [Tooltip("¼±Çà Ãæµ¹ ¹Ú½ºÄ³½ºÆ®¸¦ »ç¿ëÇÒ °æ¿ì Â÷´Ü ·¹ÀÌ¾î(¼±ÅÃ)")]
+    [Tooltip("ì„ í–‰ ì¶©ëŒ ë°•ìŠ¤ìºìŠ¤íŠ¸ë¥¼ ì‚¬ìš©í•  ê²½ìš° ì°¨ë‹¨ ë ˆì´ì–´(ì„ íƒ)")]
     [SerializeField] private LayerMask _blockingMask = ~0;
-    [Tooltip("Å¾½Â°´ MovePosition Àü¿¡ BoxCast·Î Ãæµ¹ ÁöÁ¡±îÁö¸¸ ÀÌµ¿·®À» Å¬·¥ÇÁ")]
+    [Tooltip("íƒ‘ìŠ¹ê° MovePosition ì „ì— BoxCastë¡œ ì¶©ëŒ ì§€ì ê¹Œì§€ë§Œ ì´ë™ëŸ‰ì„ í´ë¨í”„")]
     [SerializeField] private bool _usePrecastClamp = false;
-    [Tooltip("Å¾½Â °¨Áö¿ë Æ®¸®°Å")]
+    [Tooltip("íƒ‘ìŠ¹ ê°ì§€ìš© íŠ¸ë¦¬ê±°")]
     [SerializeField] private Collider2D _triggerCollector;
 
     [Header("Boot")]
-    [Tooltip("Start¿¡¼­ ÀÚµ¿ ÀÌµ¿ ½ÃÀÛ")]
+    [Tooltip("Startì—ì„œ ìë™ ì´ë™ ì‹œì‘")]
     [SerializeField] private bool _moveOnStart = false;
 
     [Header("Debug")]
@@ -99,10 +94,16 @@ public class MovingFloor : MonoBehaviour
 
     private GridObject _gridObj;
     private bool _isMoving;
-    private float _elapsed; // ¸ğµå °ø¿ë °æ°ú ½Ã°£
+    private float _elapsed; // ëª¨ë“œ ê³µìš© ê²½ê³¼ ì‹œê°„
     private Vector3 _startPos;
     private Vector3 _endPos;
-    private Vector3 _lastPos;
+    private Vector3 _prevPos;
+
+    // ì—”ë“œ í‰ë©´ í´ë¨í”„ìš©
+    // ìºì‹œ: ì´ë™ ì¶• ë‹¨ìœ„ë²¡í„°/ë¶€í˜¸/ì—”ë“œ í‰ë©´ ìŠ¤ì¹¼ë¼
+    private Vector2 _moveDir; // ì •ê·œí™”ëœ ì´ë™ë°©í–¥(2D)
+    private float _dirSign;   // +1 / -1
+    private float _endScalar;      // ì—”ë“œ í‰ë©´ì˜ ì¶•ìƒ ì¢Œí‘œ(dot(endWorld, moveDir))
 
     private readonly List<Rigidbody2D> _passengers = new List<Rigidbody2D>();
 
@@ -111,7 +112,7 @@ public class MovingFloor : MonoBehaviour
         _gridObj = GetComponent<GridObject>();
         if (_gridObj == null)
         {
-            Debug.LogError("[MovingFloor] GridObject°¡ ÇÊ¿äÇÕ´Ï´Ù.");
+            Debug.LogError("[MovingFloor] GridObjectê°€ í•„ìš”í•©ë‹ˆë‹¤.");
             enabled = false;
             return;
         }
@@ -124,7 +125,7 @@ public class MovingFloor : MonoBehaviour
     {
         _startPos = GridUtil.CellToWorldCenter(_startCell);
         _endPos = GridUtil.CellToWorldCenter(_endCell);
-        _lastPos = _startPos;
+        _prevPos = _startPos;
 
         _rb.position = _startPos;
 
@@ -139,42 +140,24 @@ public class MovingFloor : MonoBehaviour
         if (!_isMoving) return;
 
         Vector3 cur = transform.position;
-        Vector3 next = cur;
-
-        switch (_moveMode)
-        {
-            case E_MoveMode.DurationToTarget:
-                {
-                    _elapsed += Time.fixedDeltaTime;
-                    float duration = Mathf.Max(0.0001f, _moveDuration);
-                    float t = Mathf.Clamp01(_elapsed / duration);
-
-                    next = Vector3.Lerp(_startPos, _endPos, t);
-                    break;
-                }
-            case E_MoveMode.SpeedUnitsPerSecond:
-                {
-                    float step = Mathf.Max(0f, _moveSpeed) * Time.fixedDeltaTime;
-                    next = Vector3.MoveTowards(cur, _endPos, step);
-                    break;
-                }
-        }
-
+        Vector3 next = ComputeNext(cur);
         Vector3 delta = next - cur;
+
+        // í”„ë ˆì„ ì¤‘ì²© ìŠ¹ê° ìˆ˜ì§‘
+        RefreshPassengersFramewise();
+
         if (delta != Vector3.zero)
         {
-            MovePassengers(delta);
-            transform.position = next;
-            _lastPos = next;
+            MovePassengersWithEndClamp(delta);
         }
 
-        bool arrived =
-            (_moveMode == E_MoveMode.DurationToTarget && _elapsed >= Mathf.Max(0.0001f, _moveDuration))
-            ||
-            (_moveMode == E_MoveMode.SpeedUnitsPerSecond && (next - _endPos).sqrMagnitude <= 0.000001f);
+        transform.position = next;
+        _prevPos = next;
 
-        if (arrived)
+        if (ReachedEnd(next))
+        {
             FinishMove();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -201,7 +184,7 @@ public class MovingFloor : MonoBehaviour
     }
 
     /// <summary>
-    /// endCell·Î 1È¸ ÀÌµ¿
+    /// endCellë¡œ 1íšŒ ì´ë™
     /// </summary>
     public void TriggerMove()
     {
@@ -214,14 +197,20 @@ public class MovingFloor : MonoBehaviour
 
         _startPos = transform.position;
         _endPos = GridUtil.CellToWorldCenter(_endCell);
-        _lastPos = _startPos;
+        _prevPos = _startPos;
 
-        RefreshPassengers();
+        // ì´ë™ ì¶•/ë¶€í˜¸/ì—”ë“œ í‰ë©´
+        Vector2 v = (Vector2)(_endPos - _startPos);
+        _moveDir = v.sqrMagnitude > 0 ? v.normalized : Vector2.right;
+        _dirSign = Mathf.Sign(Vector2.Dot((Vector2)(_endPos - _startPos), _moveDir));
+        _endScalar = Vector2.Dot((Vector2)_endPos, _moveDir);
+
+        RefreshPassengersInitial();
         SetPlayerInputLock(true);
     }
 
     /// <summary>
-    /// ÀÓÀÇÀÇ ¸ñÇ¥ ¼¿·Î ÀÌµ¿ ½ÃÀÛ
+    /// ì„ì˜ì˜ ëª©í‘œ ì…€ë¡œ ì´ë™ ì‹œì‘
     /// </summary>
     public void TriggerMoveTo(Vector3Int targetCell)
     {
@@ -232,47 +221,73 @@ public class MovingFloor : MonoBehaviour
     }
 
     /// <summary>
-    /// °­Á¦ Á¤Áö + Çö À§Ä¡ ±Ù»ç ¼¿·Î ½º³À + Á¡À¯ °»½Å
+    /// ê°•ì œ ì •ì§€ + í˜„ ìœ„ì¹˜ ê·¼ì‚¬ ì…€ë¡œ ìŠ¤ëƒ… + ì ìœ  ê°±ì‹ 
     /// </summary>
     public void ForceStopAndSnapToNearestCell()
     {
+        _isMoving = false;
+        
         var world = transform.position;
         var newCell = GridUtil.WorldToCell(world);
-
-        _isMoving = false;
         transform.position = GridUtil.CellToWorldCenter(newCell);
 
         var oldCell = _gridObj.CurrentCell;
         GridOccupancy.Instance?.TryRegister(_gridObj, newCell);
 
+        ReRegisterPassengersToGrid();
         SetPlayerInputLock(false);
         _passengers.Clear();
+    }
+
+    private Vector3 ComputeNext(Vector3 cur)
+    {
+        switch (_moveMode)
+        {
+            case E_MoveMode.DurationToTarget:
+                _elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(_elapsed / Mathf.Max(0.0001f, _moveDuration));
+                return Vector3.Lerp(_startPos, _endPos, t);
+            case E_MoveMode.SpeedUnitsPerSecond:
+                float step = Mathf.Max(0f, _moveSpeed) * Time.deltaTime;
+                return Vector3.MoveTowards(cur, _endPos, step);
+        }
+        return cur;
+    }
+
+    private bool ReachedEnd(Vector3 next)
+    {
+        return _moveMode == E_MoveMode.DurationToTarget
+            ? _elapsed >= Mathf.Max(0.0001f, _moveDuration)
+            : (next - _endPos).sqrMagnitude <= 1e-8f;
     }
 
     private void FinishMove()
     {
         _isMoving = false;
 
-        // 1) ÀÚ±â ÀÚ½Å ½º³À
+        // 1) ìê¸° ìì‹  ìŠ¤ëƒ…
         transform.position = GridUtil.CellToWorldCenter(_endCell);
 
-        // 2) GridObject.Cell °»½Å + Á¡À¯ °»½Å
+        // 2) GridObject.Cell ê°±ì‹  + ì ìœ  ê°±ì‹ 
         var oldCell = _gridObj.CurrentCell;
         GridOccupancy.Instance?.TryRegister(_gridObj, _endCell);
 
-        // Å¾½Â°´ Àçµî·Ï
+        // íƒ‘ìŠ¹ê° ì¬ë“±ë¡
         ReRegisterPassengersToGrid();
 
-        // 3) ¿ÜºÎ ½Ã½ºÅÛ(¿¹: ·¹ÀÌÀú ¸®Ä³½ºÆ®, °æ·Î µ¿±âÈ­ µî) ÅëÁö ÇÊ¿ä ½Ã ¿©±â¼­ È£Ãâ
+        // 3) ì™¸ë¶€ ì‹œìŠ¤í…œ(ì˜ˆ: ë ˆì´ì € ë¦¬ìºìŠ¤íŠ¸, ê²½ë¡œ ë™ê¸°í™” ë“±) í†µì§€ í•„ìš” ì‹œ ì—¬ê¸°ì„œ í˜¸ì¶œ
         LaserWorldEvents.RaiseWorldChanged();
 
         SetPlayerInputLock(false);
         _passengers.Clear();
     }
 
-    private void MovePassengers(Vector3 delta)
+    private void MovePassengersWithEndClamp(Vector3 deltaWorld)
     {
-        if (delta == Vector3.zero || _passengers.Count == 0) return;
+        if (_passengers.Count == 0 || deltaWorld == Vector3.zero) return;
+
+        Vector2 delta = (Vector2)deltaWorld;
+        float stepS = Vector2.Dot(delta, _moveDir);
 
         foreach (var rb in _passengers)
         {
@@ -280,18 +295,28 @@ public class MovingFloor : MonoBehaviour
             if (((1 << rb.gameObject.layer) & _passengerMask.value) == 0) continue;
 
             Vector2 origin = rb.position;
-            Vector2 target = origin + (Vector2)delta;
+            float originS = Vector2.Dot(origin, _moveDir);
+            float wantS = originS + stepS;
+
+            // ì—”ë“œ í‰ë©´ í´ë¨í”„
+            float clampedS = (_dirSign >= 0f) ? Mathf.Min(wantS, _endScalar) : Mathf.Max(wantS, _endScalar);
+            Vector2 target = origin + _moveDir * (clampedS - originS);
 
             if (_usePrecastClamp)
             {
-                var col = rb.GetComponent<Collider2D>();
-                if (col != null)
+                Vector2 straight = target - origin;
+                float dist = straight.magnitude;
+                if (dist > 0f)
                 {
-                    var size = col.bounds.size;
-                    var hit = Physics2D.BoxCast(origin, size, 0f, ((Vector2)delta).normalized,
-                                                delta.magnitude, _blockingMask);
-                    if (hit.collider != null)
-                        target = origin + ((Vector2)delta).normalized * hit.distance;
+                    var col = rb.GetComponent<Collider2D>();
+                    if (col != null)
+                    {
+                        var size = col.bounds.size;
+                        var hit = Physics2D.BoxCast(origin, size, 0f, straight.normalized,
+                            dist, _blockingMask);
+                        if (hit.collider != null)
+                            target = origin + straight.normalized * hit.distance;
+                    }
                 }
             }
 
@@ -299,13 +324,26 @@ public class MovingFloor : MonoBehaviour
         }
     }
 
-    private void RefreshPassengers()
+    private void RefreshPassengersInitial()
     {
-        _passengers.Clear();
+        RefreshPassengers(true);
+    }
+
+    private void RefreshPassengersFramewise()
+    {
+        RefreshPassengers(false);
+    }
+
+    private void RefreshPassengers(bool includeExisting)
+    {
+        if (!includeExisting)
+        {
+            _passengers.Clear();
+        }
 
         if (_triggerCollector != null)
         {
-            // Æ®¸®°Å ³» °ãÄ¡´Â Äİ¶óÀÌ´õ ¼öÁı
+            // íŠ¸ë¦¬ê±° ë‚´ ê²¹ì¹˜ëŠ” ì½œë¼ì´ë” ìˆ˜ì§‘
             var results = new List<Collider2D>();
             var filter = new ContactFilter2D
             {
@@ -321,7 +359,7 @@ public class MovingFloor : MonoBehaviour
         }
         else
         {
-            // Æ®¸®°Å ¾øÀ» ¶§: º»Ã¼ Äİ¶óÀÌ´õ »ó¸é ±âÁØ OverlapBox ´ëÃ¼ ¼öÁı
+            // íŠ¸ë¦¬ê±° ì—†ì„ ë•Œ: ë³¸ì²´ ì½œë¼ì´ë” ìƒë©´ ê¸°ì¤€ OverlapBox ëŒ€ì²´ ìˆ˜ì§‘
             var col = GetComponent<Collider2D>();
             if (col != null)
             {
@@ -360,7 +398,7 @@ public class MovingFloor : MonoBehaviour
 
         _passengers.Remove(rb);
 
-        // ÇÃ·¹ÀÌ¾î°¡ ³»·È´Ù¸é ÀÔ·Â ÇØÁ¦(¾ÈÀüÀåÄ¡)
+        // í”Œë ˆì´ì–´ê°€ ë‚´ë ¸ë‹¤ë©´ ì…ë ¥ í•´ì œ(ì•ˆì „ì¥ì¹˜)
         var player = rb.GetComponent<PlayerFreeMove>();
         if (player != null)
         {
@@ -388,7 +426,7 @@ public class MovingFloor : MonoBehaviour
         {
             if (rb == null) continue;
 
-            // GridObject°¡ ºÙÀº ¿ÀºêÁ§Æ®¸¸ Àçµî·Ï
+            // GridObjectê°€ ë¶™ì€ ì˜¤ë¸Œì íŠ¸ë§Œ ì¬ë“±ë¡
             var gobj = rb.GetComponent<GridObject>();
             if (gobj == null) continue;
 

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1019153076544910413}
   - component: {fileID: 2978991264418330440}
   - component: {fileID: 9212322354974884941}
+  - component: {fileID: 3403578275286332031}
   m_Layer: 9
   m_Name: Mirror_PathType
   m_TagString: Untagged
@@ -149,7 +150,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9, y: 0.9}
   m_EdgeRadius: 0
 --- !u!114 &2978991264418330440
 MonoBehaviour:
@@ -163,6 +164,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d3f8705c17f66a438b1921b2f18a050, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _pathCells: []
+  _startIndex: 0
+  _loop: 1
+  pushDuration: 0.1
 --- !u!114 &9212322354974884941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,4 +180,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24622df3582d1354e91eb88757fd7042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _type: 1
+  _shapeType: 0
+--- !u!50 &3403578275286332031
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7265626503830389969}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
