@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1227374303
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 4128247789669509531, guid: 71fd517b050af8348a62060475e48517, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -103,8 +103,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pivotCell: {x: 0, y: 0, z: 0}
+  _rotateMode: 1
   _angleStep: 90
   _rotateDuration: 0.5
+  _rotateSpeedDeg: 180
   _snapMode: 0
   _clockwise: 1
   _passengerMask:
@@ -114,6 +116,7 @@ MonoBehaviour:
   _blockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  _rotatePassengerOrientation: 0
   _snapPivotOnAwake: 0
   _rotateOnAwake: 0
   _showGizmos: 1

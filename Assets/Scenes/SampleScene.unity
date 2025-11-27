@@ -2170,11 +2170,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2284304409215483521, guid: b7ca2d8d90e54e64d9da1e94fd311277, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.5
+      value: -3.54
       objectReference: {fileID: 0}
     - target: {fileID: 2284304409215483521, guid: b7ca2d8d90e54e64d9da1e94fd311277, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.5
+      value: 1.41
       objectReference: {fileID: 0}
     - target: {fileID: 2284304409215483521, guid: b7ca2d8d90e54e64d9da1e94fd311277, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4325,11 +4325,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6611097149470563963, guid: 66a807bac88064a4d8bf0be48824b952, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.5
+      value: 3.3
       objectReference: {fileID: 0}
     - target: {fileID: 6611097149470563963, guid: 66a807bac88064a4d8bf0be48824b952, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.5
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6611097149470563963, guid: 66a807bac88064a4d8bf0be48824b952, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6823,10 +6823,14 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3042289259161926025, guid: 21ffe4797f05711468829c9811d1b22b, type: 3}
       propertyPath: _angleStep
-      value: 180
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: -3042289259161926025, guid: 21ffe4797f05711468829c9811d1b22b, type: 3}
       propertyPath: _rotateOnAwake
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3042289259161926025, guid: 21ffe4797f05711468829c9811d1b22b, type: 3}
+      propertyPath: _rotatePassengerOrientation
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2935627579605551651, guid: 21ffe4797f05711468829c9811d1b22b, type: 3}
@@ -6961,11 +6965,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6148714507155792723, guid: 920a531151d3ecb43ab0fe12e8ad6722, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.27
+      value: -4.84
       objectReference: {fileID: 0}
     - target: {fileID: 6148714507155792723, guid: 920a531151d3ecb43ab0fe12e8ad6722, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.56
+      value: 3.15
       objectReference: {fileID: 0}
     - target: {fileID: 6148714507155792723, guid: 920a531151d3ecb43ab0fe12e8ad6722, type: 3}
       propertyPath: m_LocalPosition.z
@@ -7199,7 +7203,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1974503635189172358, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.5
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 1974503635189172358, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
       propertyPath: m_LocalPosition.y
@@ -7238,6 +7242,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
+      propertyPath: _moveMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
       propertyPath: _endCell.y
       value: 1
       objectReference: {fileID: 0}
@@ -7247,7 +7255,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
       propertyPath: _startCell.x
-      value: 4
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
       propertyPath: _startCell.y
@@ -7255,7 +7263,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
       propertyPath: _blockingMask.m_Bits
-      value: 1335
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
       propertyPath: _passengerMask.m_Bits

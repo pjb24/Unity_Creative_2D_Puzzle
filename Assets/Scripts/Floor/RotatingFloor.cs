@@ -1,7 +1,9 @@
 /// 
-/// RotatingFloor (GridObject / GridOccupancy / GridUtil 연동 · 180° 반전 이슈 해결 버전)
+/// RotatingFloor (GridObject / GridOccupancy / GridUtil 연동 · 회전 모드 선택 · 180° 래핑 이슈 해결)
 /// - "Raw 각도 누적"으로 회전 방향 반전(±180 래핑) 문제 제거
-/// - 중심 피벗을 기준으로 일정 시간 동안 angleStep만큼 회전(시계/반시계)
+/// - 회전 모드:
+///   1) DurationToTarget    : 지정 시간(rotateDuration) 동안 angleStep 만큼 보간 회전
+///   2) SpeedDegPerSecond   : 초당 rotateSpeedDeg 만큼 등속 회전(목표 각도 도달 시 종료)
 /// - 회전 중 위에 있는 Rigidbody2D 탑승객을 deltaAngle만큼 원운동 MovePosition으로 동기 이동
 /// - 충돌 시 탑승객만 멈추고 바닥은 계속 회전(Physics2D에 위임, 선택적으로 선행 클램프 지원)
 /// - 종료 시 타일 스냅(GridUtil) 및 점유 갱신(GridOccupancy.TryRegister)
@@ -30,6 +32,12 @@ using UnityEngine;
 [RequireComponent(typeof(GridObject))]
 public class RotatingFloor : MonoBehaviour
 {
+    public enum E_RotateMode
+    {
+        DurationToTarget,   // rotateDuration 동안 angleStep 만큼 회전 (보간)
+        SpeedDegPerSecond   // 초당 rotateSpeedDeg 만큼 등속 회전 (목표각 도달 시 완료)
+    }
+
     public enum E_SnapMode
     {
         // 모든 자식 트랜스폼을 회전 종료 후 가장 가까운 셀 중심으로 스냅(45° 등 임의 각도 대응)
@@ -42,11 +50,22 @@ public class RotatingFloor : MonoBehaviour
     [Tooltip("피벗이 위치할 셀(부모 GridObject.Cell과 동일하게 두는 것을 권장)")]
     [SerializeField] private Vector3Int _pivotCell;
 
+    [Header("Rotation Mode")]
+    public E_RotateMode _rotateMode = E_RotateMode.DurationToTarget;
+
     [Header("Rotation")]
     [Tooltip("한 번 회전할 각도(예: 90 또는 45)")]
+    [SnapTo(90f)]
     [SerializeField] private float _angleStep = 90f;
-    [Tooltip("회전에 걸리는 시간(초)")]
+    
+    [Tooltip("[DurationToTarget] 회전에 걸리는 시간(초)")]
+    [ShowIfAny(nameof(_rotateMode), E_RotateMode.DurationToTarget)]
     [SerializeField] private float _rotateDuration = 0.5f;
+
+    [Tooltip("[SpeedDegPerSecond] 초당 회전 각도(도/초)")]
+    [ShowIfAny(nameof(_rotateMode), E_RotateMode.SpeedDegPerSecond)]
+    [SerializeField] private float _rotateSpeedDeg = 180f;
+    
     [Tooltip("종료 시 타일 스냅 방식")]
     [SerializeField] private E_SnapMode _snapMode = E_SnapMode.NearestCell;
     [Tooltip("회전 방향")]
@@ -59,6 +78,10 @@ public class RotatingFloor : MonoBehaviour
     [SerializeField] private bool _usePrecastClamp = false;
     [Tooltip("선행 클램프 시 차단 레이어")]
     [SerializeField] private LayerMask _blockingMask = ~0;
+
+    [Header("Passenger Orientation")]
+    [Tooltip("탑승객의 방향(회전)도 함께 회전시킬지 여부")]
+    [SerializeField] private bool _rotatePassengerOrientation = false;
 
     [Header("Boot")]
     [Tooltip("Awake 시 피벗을 pivotCell 좌표로 스냅")]
@@ -76,13 +99,13 @@ public class RotatingFloor : MonoBehaviour
     // 내부 상태
     private GridObject _gridObj;     // 부모(피벗)의 GridObject
     private bool _isRotating;
-    private float _elapsed;
+    private float _elapsed;          // DurationToTarget에서 경과 시간
 
     // *** 핵심: Unity Euler를 쓰지 않고 "raw 각도"를 직접 누적 관리 ***
-    private float _rawStartAngle;     // 0~n, Unity Euler와 무관
-    private float _rawTargetAngle;    // 0~n, Unity Euler와 무관
-    private float _rawCurrentAngle;   // 0~n, Unity Euler와 무관
-    private float _rawPrevAngle;      // 이전 프레임 raw 각도
+    private float _rawStartAngle;     // 시작 raw 각
+    private float _rawTargetAngle;    // 목표 raw 각
+    private float _rawCurrentAngle;   // 현재 raw 각
+    private float _rawPrevAngle;      // 이전 프레임 raw 각
 
     // 탑승객 캐시
     private List<Rigidbody2D> _passengers = new();
@@ -124,22 +147,37 @@ public class RotatingFloor : MonoBehaviour
     {
         if (!_isRotating) return;
 
-        _elapsed += Time.fixedDeltaTime;
-        float t = Mathf.Clamp01(_elapsed / Mathf.Max(0.0001f, _rotateDuration));
+        float nextRaw = _rawCurrentAngle;
 
-        // raw 각도 보간 (Unity Euler 래핑 사용 안 함)
-        _rawCurrentAngle = Mathf.Lerp(_rawStartAngle, _rawTargetAngle, t);
+        if (_rotateMode == E_RotateMode.DurationToTarget)
+        {
+            _elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(_elapsed / Mathf.Max(0.0001f, _rotateDuration));
+            // raw 각도 보간 (Unity Euler 래핑 사용 안 함)
+            nextRaw = Mathf.Lerp(_rawStartAngle, _rawTargetAngle, t);
+        }
+        else // SpeedDegPerSecond
+        {
+            float step = Mathf.Max(0f, _rotateSpeedDeg) * Time.fixedDeltaTime;
+            nextRaw = Mathf.MoveTowards(_rawCurrentAngle, _rawTargetAngle, step);
+        }
 
-        float deltaAngleDeg = _rawCurrentAngle - _rawPrevAngle; // 부호 안정
+        float deltaAngleDeg = nextRaw - _rawPrevAngle; // 부호(방향) 안정
         if (Mathf.Abs(deltaAngleDeg) > 0.0001f)
         {
             RotatePassengers(deltaAngleDeg);
             // transform에는 "표시각"으로만 반영
-            transform.rotation = Quaternion.Euler(0, 0, NormalizeToEuler(_rawCurrentAngle));
-            _rawPrevAngle = _rawCurrentAngle;
+            transform.rotation = Quaternion.Euler(0, 0, NormalizeToEuler(nextRaw));
+            _rawPrevAngle = nextRaw;
+            _rawCurrentAngle = nextRaw;
         }
 
-        if (t >= 1f)
+        bool arrived =
+            (_rotateMode == E_RotateMode.DurationToTarget && _elapsed >= Mathf.Max(0.0001f, _rotateDuration))
+            ||
+            (_rotateMode == E_RotateMode.SpeedDegPerSecond && Mathf.Approximately(_rawCurrentAngle, _rawTargetAngle));
+
+        if (arrived)
         {
             FinishRotate();
         }
@@ -201,9 +239,10 @@ public class RotatingFloor : MonoBehaviour
     }
 
     /// <summary>
-    /// 임의의 절대각(targetAngleZ)까지 회전 시작
+    /// 절대 목표(raw) 각도로 회전 시작. (표시각 아님: 누적 각 기준)
+    /// 예: 현재 270, targetRaw=450(=표시 90) 같은 방식으로 사용 가능.
     /// </summary>
-    public void TriggerRotateTo(float targetAngleRaw)
+    public void TriggerRotateToAbsoluteRaw(float targetAngleRaw)
     {
         if (_isRotating) return;
 
@@ -227,6 +266,8 @@ public class RotatingFloor : MonoBehaviour
         SnapTilesToGrid();
         UpdatePivotOccupancy();
 
+        ReRegisterPassengersToGrid();
+
         SetPlayerInputLock(false);
         _passengers.Clear();
     }
@@ -240,11 +281,10 @@ public class RotatingFloor : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, 0, NormalizeToEuler(_rawCurrentAngle));
 
         SnapTilesToGrid();
+        UpdatePivotOccupancy();
         
         // 탑승객 재등록
         ReRegisterPassengersToGrid();
-
-        UpdatePivotOccupancy();
 
         SetPlayerInputLock(false);
         _passengers.Clear();
@@ -307,6 +347,12 @@ public class RotatingFloor : MonoBehaviour
             }
 
             rb.MovePosition(target);
+
+            // 2) 방향 동기 회전(옵션)
+            if (_rotatePassengerOrientation)
+            {
+                rb.MoveRotation(rb.rotation + deltaAngleDeg);
+            }
         }
     }
 
