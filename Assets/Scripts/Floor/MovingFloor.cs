@@ -30,6 +30,10 @@
 /// 1) DurationToTarget: 지정 시간(moveDuration) 동안 Lerp 이동
 /// 2) SpeedUnitsPerSecond: 초당 거리(moveSpeed)로 등속 이동
 /// 
+/// 이동 방향
+/// 1) Start -> End
+/// 2) End -> Start
+/// 
 /// 기능
 /// - 매 프레임 Trigger/OverlapBox로 승객 수집
 /// - 엔드 평면 클램프 적용 — 목표 초과 이동 방지
@@ -49,7 +53,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(GridObject))]
-public class MovingFloor : MonoBehaviour
+public class MovingFloor : MonoBehaviour, IActivable
 {
     public enum E_MoveMode
     {
@@ -57,11 +61,21 @@ public class MovingFloor : MonoBehaviour
         SpeedUnitsPerSecond,  // 초당 거리(속도)로 이동 (MoveTowards)
     }
 
+    public enum E_PathDirection
+    {
+        StartToEnd,
+        EndToStart,
+    }
+
     [Header("Grid Path")]
     [Tooltip("시작 셀 (씬 배치 기준)")]
     [SerializeField] private Vector3Int _startCell;
     [Tooltip("도착 셀")]
     [SerializeField] private Vector3Int _endCell;
+
+    [Header("Direction")]
+    [Tooltip("Start→End 또는 End→Start 선택")]
+    public E_PathDirection _direction = E_PathDirection.StartToEnd;
 
     [Header("Move Mode")]
     [SerializeField] private E_MoveMode _moveMode = E_MoveMode.DurationToTarget;
@@ -95,9 +109,13 @@ public class MovingFloor : MonoBehaviour
     private GridObject _gridObj;
     private bool _isMoving;
     private float _elapsed; // 모드 공용 경과 시간
-    private Vector3 _startPos;
-    private Vector3 _endPos;
-    private Vector3 _prevPos;
+
+    private Vector3Int _fromCell; // 이번 이동의 시작 셀
+    private Vector3Int _toCell;   // 이번 이동의 도착 셀
+
+    private Vector3 _fromWorld;
+    private Vector3 _toWorld;
+    private Vector3 _prevWorld;
 
     // 엔드 평면 클램프용
     // 캐시: 이동 축 단위벡터/부호/엔드 평면 스칼라
@@ -123,15 +141,18 @@ public class MovingFloor : MonoBehaviour
 
     private void Start()
     {
-        _startPos = GridUtil.CellToWorldCenter(_startCell);
-        _endPos = GridUtil.CellToWorldCenter(_endCell);
-        _prevPos = _startPos;
+        // 현재 방향 기준 From/To 결정
+        ResolveFromToCells();
 
-        _rb.position = _startPos;
+        _fromWorld = GridUtil.CellToWorldCenter(_fromCell);
+        _toWorld = GridUtil.CellToWorldCenter(_toCell);
+        _prevWorld = transform.position;
+
+        _rb.position = transform.position;
 
         if (_moveOnStart)
         {
-            TriggerMove();
+            TriggerMoveByInspectorDirection();
         }
     }
 
@@ -152,7 +173,7 @@ public class MovingFloor : MonoBehaviour
         }
 
         transform.position = next;
-        _prevPos = next;
+        _prevWorld = next;
 
         if (ReachedEnd(next))
         {
@@ -183,30 +204,59 @@ public class MovingFloor : MonoBehaviour
         Gizmos.DrawLine(a, b);
     }
 
+    public void SetActiveState(bool on)
+    {
+        if (on)
+        {
+            TriggerMoveForward();
+        }
+        else
+        {
+            TriggerMoveBackward();
+        }
+    }
+
     /// <summary>
-    /// endCell로 1회 이동
+    /// Inspector의 direction 값에 따라 이동 시작
     /// </summary>
-    public void TriggerMove()
+    public void TriggerMoveByInspectorDirection()
     {
         if (_isMoving) return;
+        ResolveFromToCells();
+        BeginMove();
+    }
 
-        GridOccupancy.Instance?.Unregister(_gridObj.CurrentCell);
+    /// <summary>
+    /// 강제로 Start→End 이동
+    /// </summary>
+    public void TriggerMoveForward()
+    {
+        if (_isMoving) return;
+        _direction = E_PathDirection.StartToEnd;
+        ResolveFromToCells();
+        BeginMove();
+    }
 
-        _isMoving = true;
-        _elapsed = 0f;
+    /// <summary>
+    /// 강제로 End→Start 이동
+    /// </summary>
+    public void TriggerMoveBackward()
+    {
+        if (_isMoving) return;
+        _direction = E_PathDirection.EndToStart;
+        ResolveFromToCells();
+        BeginMove();
+    }
 
-        _startPos = transform.position;
-        _endPos = GridUtil.CellToWorldCenter(_endCell);
-        _prevPos = _startPos;
-
-        // 이동 축/부호/엔드 평면
-        Vector2 v = (Vector2)(_endPos - _startPos);
-        _moveDir = v.sqrMagnitude > 0 ? v.normalized : Vector2.right;
-        _dirSign = Mathf.Sign(Vector2.Dot((Vector2)(_endPos - _startPos), _moveDir));
-        _endScalar = Vector2.Dot((Vector2)_endPos, _moveDir);
-
-        RefreshPassengersInitial();
-        SetPlayerInputLock(true);
+    /// <summary>
+    /// 현재 방향을 토글해 이동
+    /// </summary>
+    public void TriggerMoveToggleDirection()
+    {
+        if (_isMoving) return;
+        _direction = (_direction == E_PathDirection.StartToEnd) ? E_PathDirection.EndToStart : E_PathDirection.StartToEnd;
+        ResolveFromToCells();
+        BeginMove();
     }
 
     /// <summary>
@@ -216,8 +266,12 @@ public class MovingFloor : MonoBehaviour
     {
         if (_isMoving) return;
 
-        _endCell = targetCell;
-        TriggerMove();
+        // 현재 위치(셀)를 From으로, targetCell을 To로 설정
+        _fromCell = GridUtil.WorldToCell(transform.position);
+        _toCell = targetCell;
+        _direction = E_PathDirection.StartToEnd; // 방향 표시는 의미 없음
+        PreparePathVectors();
+        BeginMovePrepared();
     }
 
     /// <summary>
@@ -231,7 +285,6 @@ public class MovingFloor : MonoBehaviour
         var newCell = GridUtil.WorldToCell(world);
         transform.position = GridUtil.CellToWorldCenter(newCell);
 
-        var oldCell = _gridObj.CurrentCell;
         GridOccupancy.Instance?.TryRegister(_gridObj, newCell);
 
         ReRegisterPassengersToGrid();
@@ -239,17 +292,77 @@ public class MovingFloor : MonoBehaviour
         _passengers.Clear();
     }
 
+    private void ResolveFromToCells()
+    {
+        if (_direction == E_PathDirection.StartToEnd)
+        {
+            _fromCell = _startCell;
+            _toCell = _endCell;
+        }
+        else
+        {
+            _fromCell = _endCell;
+            _toCell = _startCell;
+        }
+        PreparePathVectors();
+    }
+
+    private void PreparePathVectors()
+    {
+        _fromWorld = GridUtil.CellToWorldCenter(_fromCell);
+        _toWorld = GridUtil.CellToWorldCenter(_toCell);
+
+        // 이동 축/부호/엔드 평면
+        Vector2 v = (Vector2)(_toWorld - _fromWorld);
+        _moveDir = v.sqrMagnitude > 0 ? v.normalized : Vector2.right;
+        _dirSign = Mathf.Sign(Vector2.Dot((Vector2)(_toWorld - _fromWorld), _moveDir));
+        _endScalar = Vector2.Dot((Vector2)_toWorld, _moveDir);
+    }
+
+    private void BeginMove()
+    {
+        GridOccupancy.Instance?.Unregister(_gridObj.CurrentCell);
+
+        // 현재 트랜스폼이 From에 정확히 있지 않을 수 있음 → 현재 위치 기준으로 경로 보정
+        _fromWorld = transform.position;
+        // _toWorld는 유지
+        _prevWorld = _fromWorld;
+
+        _isMoving = true;
+        _elapsed = 0f;
+
+        RefreshPassengersInitial();
+        SetPlayerInputLock(true);
+    }
+
+    // From/To 벡터가 이미 세팅된 경우(TriggerMoveTo 등)
+    private void BeginMovePrepared()
+    {
+        GridOccupancy.Instance?.Unregister(_gridObj.CurrentCell);
+
+        _prevWorld = transform.position;
+        _isMoving = true;
+        _elapsed = 0f;
+
+        RefreshPassengersInitial();
+        SetPlayerInputLock(true);
+    }
+
     private Vector3 ComputeNext(Vector3 cur)
     {
         switch (_moveMode)
         {
             case E_MoveMode.DurationToTarget:
-                _elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(_elapsed / Mathf.Max(0.0001f, _moveDuration));
-                return Vector3.Lerp(_startPos, _endPos, t);
+                {
+                    _elapsed += Time.deltaTime;
+                    float t = Mathf.Clamp01(_elapsed / Mathf.Max(0.0001f, _moveDuration));
+                    return Vector3.Lerp(_fromWorld, _toWorld, t);
+                }
             case E_MoveMode.SpeedUnitsPerSecond:
-                float step = Mathf.Max(0f, _moveSpeed) * Time.deltaTime;
-                return Vector3.MoveTowards(cur, _endPos, step);
+                {
+                    float step = Mathf.Max(0f, _moveSpeed) * Time.deltaTime;
+                    return Vector3.MoveTowards(cur, _toWorld, step);
+                }
         }
         return cur;
     }
@@ -258,7 +371,7 @@ public class MovingFloor : MonoBehaviour
     {
         return _moveMode == E_MoveMode.DurationToTarget
             ? _elapsed >= Mathf.Max(0.0001f, _moveDuration)
-            : (next - _endPos).sqrMagnitude <= 1e-8f;
+            : (next - _toWorld).sqrMagnitude <= 1e-8f;
     }
 
     private void FinishMove()
@@ -298,7 +411,7 @@ public class MovingFloor : MonoBehaviour
             float originS = Vector2.Dot(origin, _moveDir);
             float wantS = originS + stepS;
 
-            // 엔드 평면 클램프
+            // 엔드 평면 클램프(방향에 따라 Max/Min)
             float clampedS = (_dirSign >= 0f) ? Mathf.Min(wantS, _endScalar) : Mathf.Max(wantS, _endScalar);
             Vector2 target = origin + _moveDir * (clampedS - originS);
 

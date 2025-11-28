@@ -1,16 +1,23 @@
-/// 
-/// RotatingFloor (GridObject / GridOccupancy / GridUtil ¿¬µ¿ ¡¤ È¸Àü ¸ğµå ¼±ÅÃ ¡¤ 180¡Æ ·¡ÇÎ ÀÌ½´ ÇØ°á)
-/// - "Raw °¢µµ ´©Àû"À¸·Î È¸Àü ¹æÇâ ¹İÀü(¡¾180 ·¡ÇÎ) ¹®Á¦ Á¦°Å
-/// - È¸Àü ¸ğµå:
-///   1) DurationToTarget    : ÁöÁ¤ ½Ã°£(rotateDuration) µ¿¾È angleStep ¸¸Å­ º¸°£ È¸Àü
-///   2) SpeedDegPerSecond   : ÃÊ´ç rotateSpeedDeg ¸¸Å­ µî¼Ó È¸Àü(¸ñÇ¥ °¢µµ µµ´Ş ½Ã Á¾·á)
-/// - È¸Àü Áß À§¿¡ ÀÖ´Â Rigidbody2D Å¾½Â°´À» deltaAngle¸¸Å­ ¿ø¿îµ¿ MovePositionÀ¸·Î µ¿±â ÀÌµ¿
-/// - Ãæµ¹ ½Ã Å¾½Â°´¸¸ ¸ØÃß°í ¹Ù´ÚÀº °è¼Ó È¸Àü(Physics2D¿¡ À§ÀÓ, ¼±ÅÃÀûÀ¸·Î ¼±Çà Å¬·¥ÇÁ Áö¿ø)
-/// - Á¾·á ½Ã Å¸ÀÏ ½º³À(GridUtil) ¹× Á¡À¯ °»½Å(GridOccupancy.TryRegister)
+ï»¿/// 
+/// RotatingFloor (GridObject / GridOccupancy / GridUtil ì—°ë™
+/// Â· íšŒì „ ëª¨ë“œ ì„ íƒ Â· 180Â° ë˜í•‘ ì´ìŠˆ í•´ê²° Â· "ì‹œì‘ ê°ë„ â†” ë ê°ë„" ì–‘ë°©í–¥ íšŒì „)
+/// - "Raw ê°ë„ ëˆ„ì "ìœ¼ë¡œ íšŒì „ ë°©í–¥ ë°˜ì „(Â±180 ë˜í•‘) ë¬¸ì œ ì œê±°
+/// - íšŒì „ ëª¨ë“œ:
+///   1) DurationToTarget    : ì§€ì • ì‹œê°„(rotateDuration) ë™ì•ˆ angleStep ë§Œí¼ ë³´ê°„ íšŒì „
+///   2) SpeedDegPerSecond   : ì´ˆë‹¹ rotateSpeedDeg ë§Œí¼ ë“±ì† íšŒì „(ëª©í‘œ ê°ë„ ë„ë‹¬ ì‹œ ì¢…ë£Œ)
+/// - ë‘ ê°€ì§€ íŠ¸ë¦¬ê±° ê²½ë¡œ ì œê³µ:
+///   A) ê¸°ì¡´ step ê¸°ë°˜: TriggerRotate(_clockwise) â†’ _angleStep ë§Œí¼ ì‹œê³„/ë°˜ì‹œê³„ íšŒì „
+///   B) í”„ë¦¬ì…‹ ê¸°ë°˜:   TriggerRotateByPresetDirection() / TriggerRotateStartToEnd() / TriggerRotateEndToStart() / TriggerRotateTogglePreset()
+///      - ë¯¸ë¦¬ ì§€ì •í•œ _startAnglePresetRaw â†’ _endAnglePresetRaw ë˜ëŠ” ê·¸ ë°˜ëŒ€ ë°©í–¥ìœ¼ë¡œ íšŒì „
+///      - ì˜µì…˜: íšŒì „ ì‹œì‘ ì „ì— í˜„ì¬ ê°ë„ë¥¼ ì‹œì‘ í”„ë¦¬ì…‹ìœ¼ë¡œ ìŠ¤ëƒ…(_snapToPresetOnStart)
+///      
+/// - íšŒì „ ì¤‘ íƒ‘ìŠ¹ê°(Rigidbody2D) ì›ìš´ë™ ë™ê¸°í™”(+ì˜µì…˜: ë°©í–¥ íšŒì „)
+/// - ì¶©ëŒ ì‹œ íƒ‘ìŠ¹ê°ë§Œ ë©ˆì¶”ê³  ë°”ë‹¥ì€ ê³„ì† íšŒì „(Physics2Dì— ìœ„ì„, ì„ íƒì ìœ¼ë¡œ ì„ í–‰ í´ë¨í”„ ì§€ì›)
+/// - ì¢…ë£Œ ì‹œ íƒ€ì¼ ìŠ¤ëƒ…(GridUtil) ë° ì ìœ  ê°±ì‹ (GridOccupancy.TryRegister) + íƒ‘ìŠ¹ê° ì¬ë“±ë¡
 ///
-/// ¿ä±¸ À¯Æ¿/ÄÄÆ÷³ÍÆ®:
+/// ìš”êµ¬ ìœ í‹¸/ì»´í¬ë„ŒíŠ¸:
 /// - GridObject
-///     .CurrentCell : Vector3Int    // ÇöÀç ±×¸®µå ¼¿
+///     .CurrentCell : Vector3Int    // í˜„ì¬ ê·¸ë¦¬ë“œ ì…€
 /// - GridOccupancy (Singleton)
 ///     .TryRegister(GridObject obj, Vector3Int cell)
 ///     .Unregister(Vector3Int cell)
@@ -18,11 +25,12 @@
 ///     .CellToWorldCenter(Vector3Int cell) : Vector3
 ///     .WorldToCell(Vector3 world)         : Vector3Int
 ///
-/// »ç¿ë¹ı:
-/// - ºÎ¸ğ(ÇÇ¹ş)¿¡ º» ½ºÅ©¸³Æ® + GridObject ºÎÂø
-/// - ÀÚ½Ä¿¡ È¸Àü ´ë»ó Å¸ÀÏ/ÇÃ·§Æû Mesh/Sprite ¹èÄ¡
-/// - Å¾½Â °¨Áö¿ë Trigger Collider2D(ºÎ¸ğ/ÀÚ½Ä ¾Æ¹« °÷) 1°³ ¹èÄ¡ ±ÇÀå
-/// - TriggerRotate(true/false) È£Ãâ·Î ½Ã°è/¹İ½Ã°è È¸Àü
+/// ì‚¬ìš© íë¦„:
+/// - í”„ë¦¬ì…‹ ê°ë„ í•„ë“œ(_startAnglePresetRaw, _endAnglePresetRaw)ì™€ ë°©í–¥(_presetDirection)ì„ Inspectorì—ì„œ ì„¤ì •
+/// - TriggerRotateByPresetDirection() í˜¸ì¶œ ì‹œ, ì„¤ì •ëœ ë°©í–¥ì— ë”°ë¼ ì‹œì‘/ë í”„ë¦¬ì…‹ ì‚¬ì´ë¥¼ íšŒì „
+///   í•„ìš” ì‹œ _snapToPresetOnStart=trueë¡œ í˜„ì¬ ê°ë„ë¥¼ ì‹œì‘ í”„ë¦¬ì…‹ì— ë§ì¶˜ ë’¤ íšŒì „ ì‹œì‘
+///
+/// - TriggerRotate(true/false) í˜¸ì¶œë¡œ ì‹œê³„/ë°˜ì‹œê³„ íšŒì „
 /// 
 
 using System.Collections.Generic;
@@ -34,59 +42,83 @@ public class RotatingFloor : MonoBehaviour
 {
     public enum E_RotateMode
     {
-        DurationToTarget,   // rotateDuration µ¿¾È angleStep ¸¸Å­ È¸Àü (º¸°£)
-        SpeedDegPerSecond   // ÃÊ´ç rotateSpeedDeg ¸¸Å­ µî¼Ó È¸Àü (¸ñÇ¥°¢ µµ´Ş ½Ã ¿Ï·á)
+        DurationToTarget,   // _rotateDuration ë™ì•ˆ angleStep ë§Œí¼ íšŒì „ (ë³´ê°„)
+        SpeedDegPerSecond   // ì´ˆë‹¹ _rotateSpeedDeg ë§Œí¼ ë“±ì† íšŒì „ (ëª©í‘œê° ë„ë‹¬ ì‹œ ì™„ë£Œ)
     }
 
     public enum E_SnapMode
     {
-        // ¸ğµç ÀÚ½Ä Æ®·£½ºÆûÀ» È¸Àü Á¾·á ÈÄ °¡Àå °¡±î¿î ¼¿ Áß½ÉÀ¸·Î ½º³À(45¡Æ µî ÀÓÀÇ °¢µµ ´ëÀÀ)
+        // ëª¨ë“  íŠ¸ëœìŠ¤í¼ì„ íšŒì „ ì¢…ë£Œ í›„ ê°€ì¥ ê°€ê¹Œìš´ ì…€ ì¤‘ì‹¬ìœ¼ë¡œ ìŠ¤ëƒ…(45Â° ë“± ì„ì˜ ê°ë„ ëŒ€ì‘)
         NearestCell,
-        // Á¤È®È÷ 90¡Æ ¹è¼ö È¸ÀüÀÏ ¶§¸¸, ¼¿ »ó´ëÁÂÇ¥¸¦ Á¤¼ö È¸Àü( -y,x / y,-x )À¸·Î ½º³À
+        // ì •í™•íˆ 90Â° ë°°ìˆ˜ íšŒì „ì¼ ë•Œë§Œ, ì…€ ìƒëŒ€ì¢Œí‘œë¥¼ ì •ìˆ˜ íšŒì „( -y,x / y,-x )ìœ¼ë¡œ ìŠ¤ëƒ…
         RightAngleDiscrete,
     }
 
+    // í”„ë¦¬ì…‹ ë°©í–¥ ì„ íƒì
+    public enum E_PresetDirection
+    {
+        StartToEnd,
+        EndToStart,
+    }
+
     [Header("Grid/Pivot")]
-    [Tooltip("ÇÇ¹şÀÌ À§Ä¡ÇÒ ¼¿(ºÎ¸ğ GridObject.Cell°ú µ¿ÀÏÇÏ°Ô µÎ´Â °ÍÀ» ±ÇÀå)")]
+    [Tooltip("í”¼ë²—ì´ ìœ„ì¹˜í•  ì…€(ë¶€ëª¨ GridObject.Cellê³¼ ë™ì¼í•˜ê²Œ ë‘ëŠ” ê²ƒì„ ê¶Œì¥)")]
     [SerializeField] private Vector3Int _pivotCell;
 
     [Header("Rotation Mode")]
-    public E_RotateMode _rotateMode = E_RotateMode.DurationToTarget;
+    [SerializeField] private E_RotateMode _rotateMode = E_RotateMode.DurationToTarget;
 
-    [Header("Rotation")]
-    [Tooltip("ÇÑ ¹ø È¸ÀüÇÒ °¢µµ(¿¹: 90 ¶Ç´Â 45)")]
+    [Header("Rotation - Step Based")]
+    [Tooltip("í•œ ë²ˆ íšŒì „í•  ê°ë„(ì˜ˆ: 90 ë˜ëŠ” 45)")]
     [SnapTo(90f)]
     [SerializeField] private float _angleStep = 90f;
     
-    [Tooltip("[DurationToTarget] È¸Àü¿¡ °É¸®´Â ½Ã°£(ÃÊ)")]
+    [Tooltip("[DurationToTarget] íšŒì „ì— ê±¸ë¦¬ëŠ” ì‹œê°„(ì´ˆ)")]
     [ShowIfAny(nameof(_rotateMode), E_RotateMode.DurationToTarget)]
     [SerializeField] private float _rotateDuration = 0.5f;
 
-    [Tooltip("[SpeedDegPerSecond] ÃÊ´ç È¸Àü °¢µµ(µµ/ÃÊ)")]
+    [Tooltip("[SpeedDegPerSecond] ì´ˆë‹¹ íšŒì „ ê°ë„(ë„/ì´ˆ)")]
     [ShowIfAny(nameof(_rotateMode), E_RotateMode.SpeedDegPerSecond)]
     [SerializeField] private float _rotateSpeedDeg = 180f;
     
-    [Tooltip("Á¾·á ½Ã Å¸ÀÏ ½º³À ¹æ½Ä")]
+    [Tooltip("ì¢…ë£Œ ì‹œ íƒ€ì¼ ìŠ¤ëƒ… ë°©ì‹")]
     [SerializeField] private E_SnapMode _snapMode = E_SnapMode.NearestCell;
-    [Tooltip("È¸Àü ¹æÇâ")]
+    [Tooltip("step ê¸°ë°˜ íšŒì „ ë°©í–¥(TriggerRotate ì‚¬ìš© ì‹œ)")]
     [SerializeField] private bool _clockwise = true;
 
+
+    [Header("Rotation â€” Preset Based")]
+    [Tooltip("í”„ë¦¬ì…‹ ì‹œì‘(raw) ê°ë„(ë„). ì˜ˆ: 0")]
+    [SnapTo(90f)]
+    [SerializeField] private float _startAnglePresetRaw = 0f;
+
+    [Tooltip("í”„ë¦¬ì…‹ ë(raw) ê°ë„(ë„). ì˜ˆ: 90")]
+    [SnapTo(90f)]
+    [SerializeField] private float _endAnglePresetRaw = 90f;
+
+    [Tooltip("í”„ë¦¬ì…‹ íšŒì „ì˜ ê¸°ë³¸ ë°©í–¥")]
+    [SerializeField] private E_PresetDirection _presetDirection = E_PresetDirection.StartToEnd;
+
+    [Tooltip("í”„ë¦¬ì…‹ íšŒì „ ì‹œì‘ ì‹œ í˜„ì¬ ê°ë„ë¥¼ ì‹œì‘ í”„ë¦¬ì…‹ ê°ë„ë¡œ ìŠ¤ëƒ…")]
+    [SerializeField] private bool _snapToPresetOnStart = false;
+
+
     [Header("Passengers")]
-    [Tooltip("Å¾½Â°´À¸·Î Ãë±ŞÇÒ ·¹ÀÌ¾î(ºñ¿ì¸é ÀüÃ¼)")]
+    [Tooltip("íƒ‘ìŠ¹ê°ìœ¼ë¡œ ì·¨ê¸‰í•  ë ˆì´ì–´(ë¹„ìš°ë©´ ì „ì²´)")]
     [SerializeField] private LayerMask _passengerMask = ~0;
-    [Tooltip("Å¾½Â°´ MovePosition Àü, Ãæµ¹ ÁöÁ¡±îÁö¸¸ ÀÌµ¿·®À» Á¦ÇÑ(¼±Çà BoxCast)")]
+    [Tooltip("íƒ‘ìŠ¹ê° MovePosition ì „, ì¶©ëŒ ì§€ì ê¹Œì§€ë§Œ ì´ë™ëŸ‰ì„ ì œí•œ(ì„ í–‰ BoxCast)")]
     [SerializeField] private bool _usePrecastClamp = false;
-    [Tooltip("¼±Çà Å¬·¥ÇÁ ½Ã Â÷´Ü ·¹ÀÌ¾î")]
+    [Tooltip("ì„ í–‰ í´ë¨í”„ ì‹œ ì°¨ë‹¨ ë ˆì´ì–´")]
     [SerializeField] private LayerMask _blockingMask = ~0;
 
     [Header("Passenger Orientation")]
-    [Tooltip("Å¾½Â°´ÀÇ ¹æÇâ(È¸Àü)µµ ÇÔ²² È¸Àü½ÃÅ³Áö ¿©ºÎ")]
+    [Tooltip("íƒ‘ìŠ¹ê°ì˜ ë°©í–¥(íšŒì „)ë„ í•¨ê»˜ íšŒì „ì‹œí‚¬ì§€ ì—¬ë¶€")]
     [SerializeField] private bool _rotatePassengerOrientation = false;
 
     [Header("Boot")]
-    [Tooltip("Awake ½Ã ÇÇ¹şÀ» pivotCell ÁÂÇ¥·Î ½º³À")]
+    [Tooltip("Awake ì‹œ í”¼ë²—ì„ pivotCell ì¢Œí‘œë¡œ ìŠ¤ëƒ…")]
     [SerializeField] private bool _snapPivotOnAwake = true;
-    [Tooltip("½ÃÀÛ ½Ã È¸Àü")]
+    [Tooltip("ì‹œì‘ ì‹œ íšŒì „")]
     [SerializeField] private bool _rotateOnAwake = false;
 
     [Header("Debug")]
@@ -94,20 +126,20 @@ public class RotatingFloor : MonoBehaviour
     [SerializeField] private Color _gizmoPivotColor = new Color(1f, 0.8f, 0.15f, 0.9f);
     [SerializeField] private Color _gizmoArcColor = new Color(0.2f, 0.9f, 1f, 0.8f);
 
-    [SerializeField] private Collider2D _triggerCollector; // Å¾½Â °¨Áö¿ë Æ®¸®°Å
+    [SerializeField] private Collider2D _triggerCollector; // íƒ‘ìŠ¹ ê°ì§€ìš© íŠ¸ë¦¬ê±°
 
-    // ³»ºÎ »óÅÂ
-    private GridObject _gridObj;     // ºÎ¸ğ(ÇÇ¹ş)ÀÇ GridObject
+    // ë‚´ë¶€ ìƒíƒœ
+    private GridObject _gridObj;     // ë¶€ëª¨(í”¼ë²—)ì˜ GridObject
     private bool _isRotating;
-    private float _elapsed;          // DurationToTarget¿¡¼­ °æ°ú ½Ã°£
+    private float _elapsed;          // DurationToTargetì—ì„œ ê²½ê³¼ ì‹œê°„
 
-    // *** ÇÙ½É: Unity Euler¸¦ ¾²Áö ¾Ê°í "raw °¢µµ"¸¦ Á÷Á¢ ´©Àû °ü¸® ***
-    private float _rawStartAngle;     // ½ÃÀÛ raw °¢
-    private float _rawTargetAngle;    // ¸ñÇ¥ raw °¢
-    private float _rawCurrentAngle;   // ÇöÀç raw °¢
-    private float _rawPrevAngle;      // ÀÌÀü ÇÁ·¹ÀÓ raw °¢
+    // *** í•µì‹¬: Unity Eulerë¥¼ ì“°ì§€ ì•Šê³  "raw ê°ë„"ë¥¼ ì§ì ‘ ëˆ„ì  ê´€ë¦¬ ***
+    private float _rawStartAngle;     // ì‹œì‘ raw ê°
+    private float _rawTargetAngle;    // ëª©í‘œ raw ê°
+    private float _rawCurrentAngle;   // í˜„ì¬ raw ê°
+    private float _rawPrevAngle;      // ì´ì „ í”„ë ˆì„ raw ê°
 
-    // Å¾½Â°´ Ä³½Ã
+    // íƒ‘ìŠ¹ê° ìºì‹œ
     private List<Rigidbody2D> _passengers = new();
 
     private void Awake()
@@ -115,7 +147,7 @@ public class RotatingFloor : MonoBehaviour
         _gridObj = GetComponent<GridObject>();
         if (_gridObj == null)
         {
-            Debug.LogError("[RotatingFloor] GridObject°¡ ÇÊ¿äÇÕ´Ï´Ù.");
+            Debug.LogError("[RotatingFloor] GridObjectê°€ í•„ìš”í•©ë‹ˆë‹¤.");
             enabled = false;
 
             return;
@@ -131,7 +163,7 @@ public class RotatingFloor : MonoBehaviour
             GridOccupancy.Instance?.TryRegister(_gridObj, _pivotCell);
         }
 
-        // ÃÊ±â raw °¢µµ´Â ÇöÀç EulerZ·Î ¼¼ÆÃ(Ç¥½Ã°¢ ¡æ raw·Î ÃÊ±âÈ­¸¸)
+        // ì´ˆê¸° raw ê°ë„ëŠ” í˜„ì¬ EulerZë¡œ ì„¸íŒ…(í‘œì‹œê° â†’ rawë¡œ ì´ˆê¸°í™”ë§Œ)
         _rawCurrentAngle = transform.eulerAngles.z;
         _rawPrevAngle = _rawCurrentAngle;
         _rawStartAngle = _rawCurrentAngle;
@@ -139,6 +171,7 @@ public class RotatingFloor : MonoBehaviour
 
         if (_rotateOnAwake)
         {
+            // step ê¸°ë°˜ íšŒì „ ì‹œì‘
             TriggerRotate(_clockwise);
         }
     }
@@ -153,7 +186,7 @@ public class RotatingFloor : MonoBehaviour
         {
             _elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(_elapsed / Mathf.Max(0.0001f, _rotateDuration));
-            // raw °¢µµ º¸°£ (Unity Euler ·¡ÇÎ »ç¿ë ¾È ÇÔ)
+            // raw ê°ë„ ë³´ê°„ (Unity Euler ë˜í•‘ ì‚¬ìš© ì•ˆ í•¨)
             nextRaw = Mathf.Lerp(_rawStartAngle, _rawTargetAngle, t);
         }
         else // SpeedDegPerSecond
@@ -162,11 +195,11 @@ public class RotatingFloor : MonoBehaviour
             nextRaw = Mathf.MoveTowards(_rawCurrentAngle, _rawTargetAngle, step);
         }
 
-        float deltaAngleDeg = nextRaw - _rawPrevAngle; // ºÎÈ£(¹æÇâ) ¾ÈÁ¤
+        float deltaAngleDeg = nextRaw - _rawPrevAngle; // ë¶€í˜¸(ë°©í–¥) ì•ˆì •
         if (Mathf.Abs(deltaAngleDeg) > 0.0001f)
         {
             RotatePassengers(deltaAngleDeg);
-            // transform¿¡´Â "Ç¥½Ã°¢"À¸·Î¸¸ ¹İ¿µ
+            // transformì—ëŠ” "í‘œì‹œê°"ìœ¼ë¡œë§Œ ë°˜ì˜
             transform.rotation = Quaternion.Euler(0, 0, NormalizeToEuler(nextRaw));
             _rawPrevAngle = nextRaw;
             _rawCurrentAngle = nextRaw;
@@ -197,12 +230,12 @@ public class RotatingFloor : MonoBehaviour
     {
         if (!_showGizmos) return;
 
-        // ÇÇ¹ş Ç¥½Ã
+        // í”¼ë²— í‘œì‹œ
         Vector3 pivotW = GridUtil.CellToWorldCenter(_pivotCell);
         Gizmos.color = _gizmoPivotColor;
         Gizmos.DrawSphere(pivotW, 0.08f);
 
-        // È¸Àü ¾ÆÅ© Ç¥½Ã(°£·«)
+        // íšŒì „ ì•„í¬ í‘œì‹œ(ê°„ëµ)
         Gizmos.color = _gizmoArcColor;
         Vector3 r = Vector3.right * 0.7f;
         int seg = 16;
@@ -219,45 +252,108 @@ public class RotatingFloor : MonoBehaviour
     }
 
     /// <summary>
-    /// angleStep¸¸Å­ È¸Àü ½ÃÀÛ (clockwise=true¸é ½Ã°è ¹æÇâ)
+    /// angleStepë§Œí¼ íšŒì „ ì‹œì‘ (clockwise=trueë©´ ì‹œê³„ ë°©í–¥)
     /// </summary>
     public void TriggerRotate(bool clockwise)
     {
         if (_isRotating) return;
 
-        float dir = clockwise ? -1f : 1f; // 2D¿¡¼­ ½Ã°è°¡ -Z
+        float dir = clockwise ? -1f : 1f; // 2Dì—ì„œ ì‹œê³„ê°€ -Z
         float delta = _angleStep * dir;
 
-        _isRotating = true;
-        _elapsed = 0f;
-        _rawStartAngle = _rawCurrentAngle;
-        _rawTargetAngle = _rawCurrentAngle + delta;
-        _rawPrevAngle = _rawStartAngle;
-
-        RefreshPassengers();
-        SetPlayerInputLock(true);
+        BeginRotateRaw(_rawCurrentAngle, _rawCurrentAngle + delta, false);
     }
 
     /// <summary>
-    /// Àı´ë ¸ñÇ¥(raw) °¢µµ·Î È¸Àü ½ÃÀÛ. (Ç¥½Ã°¢ ¾Æ´Ô: ´©Àû °¢ ±âÁØ)
-    /// ¿¹: ÇöÀç 270, targetRaw=450(=Ç¥½Ã 90) °°Àº ¹æ½ÄÀ¸·Î »ç¿ë °¡´É.
+    /// ì ˆëŒ€ ëª©í‘œ(raw) ê°ë„ë¡œ íšŒì „ ì‹œì‘. (í‘œì‹œê° ì•„ë‹˜: ëˆ„ì  ê° ê¸°ì¤€)
+    /// ì˜ˆ: í˜„ì¬ 270, targetRaw=450(=í‘œì‹œ 90) ê°™ì€ ë°©ì‹ìœ¼ë¡œ ì‚¬ìš© ê°€ëŠ¥.
     /// </summary>
     public void TriggerRotateToAbsoluteRaw(float targetAngleRaw)
     {
         if (_isRotating) return;
 
+        BeginRotateRaw(_rawCurrentAngle, targetAngleRaw, false);
+    }
+
+    /// <summary>
+    /// Inspectorì˜ _presetDirectionì— ë”°ë¼ í”„ë¦¬ì…‹ ì‹œì‘â†”ë ê°ë„ë¡œ íšŒì „
+    /// </summary>
+    public void TriggerRotateByPresetDirection()
+    {
+        if (_isRotating) return;
+
+        if (_presetDirection == E_PresetDirection.StartToEnd)
+        {
+            TriggerRotateStartToEnd();
+        }
+        else
+        {
+            TriggerRotateEndToStart();
+        }
+    }
+
+    /// <summary>
+    /// í”„ë¦¬ì…‹: ì‹œì‘(raw) â†’ ë(raw) íšŒì „
+    /// </summary>
+    public void TriggerRotateStartToEnd()
+    {
+        if (_isRotating) return;
+
+        // ì‹œì‘ í”„ë¦¬ì…‹ìœ¼ë¡œ ìŠ¤ëƒ… í›„ íšŒì „í• ì§€ ì—¬ë¶€
+        BeginRotateRaw(_startAnglePresetRaw, _endAnglePresetRaw, _snapToPresetOnStart);
+    }
+
+    /// <summary>
+    /// í”„ë¦¬ì…‹: ë(raw) â†’ ì‹œì‘(raw) íšŒì „
+    /// </summary>
+    public void TriggerRotateEndToStart()
+    {
+        if (_isRotating) return;
+
+        BeginRotateRaw(_endAnglePresetRaw, _startAnglePresetRaw, _snapToPresetOnStart);
+    }
+
+    /// <summary>
+    /// í”„ë¦¬ì…‹ ë°©í–¥ í† ê¸€ í›„ íšŒì „
+    /// </summary>
+    public void TriggerRotateTogglePreset()
+    {
+        if (_isRotating) return;
+
+        _presetDirection = (_presetDirection == E_PresetDirection.StartToEnd)
+            ? E_PresetDirection.EndToStart
+            : E_PresetDirection.StartToEnd;
+
+        TriggerRotateByPresetDirection();
+    }
+
+    // ê³µí†µ ì‹œì‘ ë£¨í‹´: raw ê°ë„ from â†’ toë¡œ íšŒì „. í•„ìš” ì‹œ í˜„ì¬ ê°ë„ë¥¼ fromìœ¼ë¡œ ìŠ¤ëƒ…
+    private void BeginRotateRaw(float fromRaw, float toRaw, bool snapCurrentToFrom)
+    {
         _isRotating = true;
         _elapsed = 0f;
-        _rawStartAngle = _rawCurrentAngle;
-        _rawTargetAngle = targetAngleRaw; // ¿¹: ÇöÀç 270 ¡æ ¸ñÇ¥ 450(=90) °¡´É
-        _rawPrevAngle = _rawStartAngle;
+
+        _rawStartAngle = fromRaw;
+        _rawTargetAngle = toRaw;
+
+        if (snapCurrentToFrom)
+        {
+            _rawCurrentAngle = fromRaw;
+            _rawPrevAngle = fromRaw;
+            transform.rotation = Quaternion.Euler(0, 0, NormalizeToEuler(_rawCurrentAngle));
+        }
+        else
+        {
+            // ìŠ¤ëƒ…ì„ í•˜ì§€ ì•Šìœ¼ë©´ "í˜„ì¬"ì—ì„œë¶€í„° toRawê¹Œì§€ íšŒì „(ë³´ê°„ ê¸°ì¤€ì€ fromRaw~toRaw)
+            _rawPrevAngle = _rawCurrentAngle;
+        }
 
         RefreshPassengers();
         SetPlayerInputLock(true);
     }
 
     /// <summary>
-    /// °­Á¦ Áß´Ü ÈÄ Çö °¢µµ·Î ½º³À/Á¡À¯ °»½Å
+    /// ê°•ì œ ì¤‘ë‹¨ í›„ í˜„ ê°ë„ë¡œ ìŠ¤ëƒ…/ì ìœ  ê°±ì‹ 
     /// </summary>
     public void ForceStopAndSnap()
     {
@@ -276,14 +372,14 @@ public class RotatingFloor : MonoBehaviour
     {
         _isRotating = false;
 
-        // raw ¡æ Ç¥½Ã°¢ ¹İ¿µ
+        // raw â†’ í‘œì‹œê° ë°˜ì˜
         _rawCurrentAngle = _rawTargetAngle;
         transform.rotation = Quaternion.Euler(0, 0, NormalizeToEuler(_rawCurrentAngle));
 
         SnapTilesToGrid();
         UpdatePivotOccupancy();
         
-        // Å¾½Â°´ Àçµî·Ï
+        // íƒ‘ìŠ¹ê° ì¬ë“±ë¡
         ReRegisterPassengersToGrid();
 
         SetPlayerInputLock(false);
@@ -292,13 +388,13 @@ public class RotatingFloor : MonoBehaviour
 
     private void UpdatePivotOccupancy()
     {
-        // ÇÇ¹ş(ºÎ¸ğ) ¼¿À» ÀçÆò°¡ÇÏ¿© Á¡À¯ °»½Å
+        // í”¼ë²—(ë¶€ëª¨) ì…€ì„ ì¬í‰ê°€í•˜ì—¬ ì ìœ  ê°±ì‹ 
         var newCell = GridUtil.WorldToCell(transform.position);
         var oldCell = _gridObj.CurrentCell;
         GridOccupancy.Instance?.Unregister(oldCell);
         GridOccupancy.Instance?.TryRegister(_gridObj, newCell);
 
-        // ÇÊ¿ä ½Ã: ·¹ÀÌÀú/°æ·Î ¸®Ä³½ºÆ® ÅëÁö
+        // í•„ìš” ì‹œ: ë ˆì´ì €/ê²½ë¡œ ë¦¬ìºìŠ¤íŠ¸ í†µì§€
         LaserWorldEvents.RaiseWorldChanged();
     }
 
@@ -319,7 +415,7 @@ public class RotatingFloor : MonoBehaviour
             Vector2 origin = rb.position;
             Vector2 dir = origin - pivot;
 
-            // È¸Àü ¸ñÇ¥ ÁÂÇ¥
+            // íšŒì „ ëª©í‘œ ì¢Œí‘œ
             Vector2 rotated = new Vector2(
                 dir.x * cos - dir.y * sin,
                 dir.x * sin + dir.y * cos
@@ -328,7 +424,7 @@ public class RotatingFloor : MonoBehaviour
 
             if (_usePrecastClamp)
             {
-                // ¼Ò°¢µµ ÇÁ·¹ÀÓ ´ÜÀ§¶ó Á÷¼± BoxCast·Î ±Ù»ç(ÃæºĞÈ÷ ¾ÈÁ¤Àû)
+                // ì†Œê°ë„ í”„ë ˆì„ ë‹¨ìœ„ë¼ ì§ì„  BoxCastë¡œ ê·¼ì‚¬(ì¶©ë¶„íˆ ì•ˆì •ì )
                 Vector2 straight = target - origin;
                 float dist = straight.magnitude;
                 if (dist > 0f)
@@ -348,7 +444,7 @@ public class RotatingFloor : MonoBehaviour
 
             rb.MovePosition(target);
 
-            // 2) ¹æÇâ µ¿±â È¸Àü(¿É¼Ç)
+            // 2) ë°©í–¥ ë™ê¸° íšŒì „(ì˜µì…˜)
             if (_rotatePassengerOrientation)
             {
                 rb.MoveRotation(rb.rotation + deltaAngleDeg);
@@ -358,14 +454,14 @@ public class RotatingFloor : MonoBehaviour
 
     private void SnapTilesToGrid()
     {
-        // ºÎ¸ğ(ÇÇ¹ş) À§Ä¡¸¦ ¿ì¼± ¼¿ Áß½ÉÀ¸·Î ½º³À
+        // í”¼ë²— ìœ„ì¹˜ë¥¼ ì…€ ì¤‘ì‹¬ìœ¼ë¡œ ìŠ¤ëƒ…
         var pivotCellNow = GridUtil.WorldToCell(transform.position);
         transform.position = GridUtil.CellToWorldCenter(pivotCellNow);
 
-        // ¸ğµç ÀÚ½ÄÀ» ½º³À ¸ğµå¿¡ µû¶ó Á¤¸®
+        // ëª¨ë“  ìì‹ì„ ìŠ¤ëƒ… ëª¨ë“œì— ë”°ë¼ ì •ë¦¬
         if (_snapMode == E_SnapMode.RightAngleDiscrete && IsRightAngleDelta(_rawTargetAngle - _rawStartAngle))
         {
-            // 90¡Æ ¹è¼ö È¸Àü: ÀÚ½Ä ¼¿ »ó´ëÁÂÇ¥¸¦ Á¤¼ö È¸Àü
+            // 90Â° ë°°ìˆ˜ íšŒì „: ìì‹ ì…€ ìƒëŒ€ì¢Œí‘œë¥¼ ì •ìˆ˜ íšŒì „
             int quarterTurns = Mod4(Mathf.RoundToInt((_rawTargetAngle - _rawStartAngle) / 90f));
             foreach (Transform child in transform)
             {
@@ -375,7 +471,7 @@ public class RotatingFloor : MonoBehaviour
                 Vector3Int rotatedLocal = local;
                 for (int i = 0; i < quarterTurns; i++)
                 {
-                    // ¹İ½Ã°è 90µµ: (x, y) -> (-y, x)
+                    // ë°˜ì‹œê³„ 90ë„: (x, y) -> (-y, x)
                     rotatedLocal = new Vector3Int(-rotatedLocal.y, rotatedLocal.x, 0);
                 }
 
@@ -385,7 +481,7 @@ public class RotatingFloor : MonoBehaviour
         }
         else
         {
-            // ±Ù»ç ½º³À: °¢ ÀÚ½ÄÀ» °¡Àå °¡±î¿î ¼¿ Áß½ÉÀ¸·Î ½º³À
+            // ê·¼ì‚¬ ìŠ¤ëƒ…: ê° ìì‹ì„ ê°€ì¥ ê°€ê¹Œìš´ ì…€ ì¤‘ì‹¬ìœ¼ë¡œ ìŠ¤ëƒ…
             foreach (Transform child in transform)
             {
                 Vector3Int cell = GridUtil.WorldToCell(child.position);
@@ -396,7 +492,7 @@ public class RotatingFloor : MonoBehaviour
 
     private static bool IsRightAngleDelta(float rawDelta)
     {
-        // rawDelta°¡ 90¡Æ ¹è¼öÀÎÁö Çã¿ë¿ÀÂ÷ ³»¿¡¼­ °Ë»ç
+        // rawDeltaê°€ 90Â° ë°°ìˆ˜ì¸ì§€ í—ˆìš©ì˜¤ì°¨ ë‚´ì—ì„œ ê²€ì‚¬
         float q = rawDelta / 90f;
         return Mathf.Abs(q - Mathf.Round(q)) < 0.01f;
     }
@@ -414,7 +510,7 @@ public class RotatingFloor : MonoBehaviour
 
     private static float NormalizeToEuler(float a)
     {
-        // Ç¥½Ã¿ë Euler º¯È¯: 0~360 ¡æ -180~180
+        // í‘œì‹œìš© Euler ë³€í™˜: 0~360 â†’ -180~180
         float ang = Mathf.Repeat(a, 360f);
         if (ang > 180f)
         {
@@ -445,7 +541,7 @@ public class RotatingFloor : MonoBehaviour
         }
         else
         {
-            // Æ®¸®°Å°¡ ¾ø´Ù¸é, ºÎ¸ğ º»Ã¼ Äİ¶óÀÌ´õ »ó¸é ºÎ±Ù¿¡¼­ OverlapBox·Î ´ëÃ¼ ¼öÁı
+            // íŠ¸ë¦¬ê±°ê°€ ì—†ë‹¤ë©´, ë¶€ëª¨ ë³¸ì²´ ì½œë¼ì´ë” ìƒë©´ ë¶€ê·¼ì—ì„œ OverlapBoxë¡œ ëŒ€ì²´ ìˆ˜ì§‘
             var col = GetComponent<Collider2D>();
             if (col != null)
             {
@@ -484,7 +580,7 @@ public class RotatingFloor : MonoBehaviour
 
         _passengers.Remove(rb);
 
-        // ÇÃ·¹ÀÌ¾î°¡ ³»·È´Ù¸é ÀÔ·Â ÇØÁ¦(¾ÈÀüÀåÄ¡)
+        // í”Œë ˆì´ì–´ê°€ ë‚´ë ¸ë‹¤ë©´ ì…ë ¥ í•´ì œ(ì•ˆì „ì¥ì¹˜)
         var player = rb.GetComponent<PlayerFreeMove>();
         if (player != null)
         { 
@@ -512,7 +608,7 @@ public class RotatingFloor : MonoBehaviour
         {
             if (rb == null) continue;
 
-            // GridObject°¡ ºÙÀº ¿ÀºêÁ§Æ®¸¸ Àçµî·Ï
+            // GridObjectê°€ ë¶™ì€ ì˜¤ë¸Œì íŠ¸ë§Œ ì¬ë“±ë¡
             var gobj = rb.GetComponent<GridObject>();
             if (gobj == null) continue;
 
