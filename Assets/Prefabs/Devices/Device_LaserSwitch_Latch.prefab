@@ -12,8 +12,11 @@ GameObject:
   - component: {fileID: 3125964085814607904}
   - component: {fileID: 4139208225493665907}
   - component: {fileID: -4060271601859000677}
+  - component: {fileID: -5144363924181863627}
+  - component: {fileID: -943764881284801502}
+  - component: {fileID: -8313331388363216911}
   m_Layer: 0
-  m_Name: Device
+  m_Name: Device_LaserSwitch_Latch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,3 +152,43 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.9, y: 0.9}
   m_EdgeRadius: 0
+--- !u!114 &-5144363924181863627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8104182484825428106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 568a7f065f565d642b93fb83f6ac3d47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _policy: 0
+--- !u!114 &-943764881284801502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8104182484825428106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb68210d61d2dd14dbea5a239119e227, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _device: {fileID: -5144363924181863627}
+--- !u!114 &-8313331388363216911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8104182484825428106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cca74c7e6b042b4e953f0841250abe9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _device: {fileID: -5144363924181863627}
+  _targets: []

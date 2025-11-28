@@ -53,7 +53,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(GridObject))]
-public class MovingFloor : MonoBehaviour, IActivable
+public class MovingFloor : MonoBehaviour
 {
     public enum E_MoveMode
     {
@@ -202,18 +202,6 @@ public class MovingFloor : MonoBehaviour, IActivable
         Gizmos.DrawSphere(a, 0.06f);
         Gizmos.DrawSphere(b, 0.06f);
         Gizmos.DrawLine(a, b);
-    }
-
-    public void SetActiveState(bool on)
-    {
-        if (on)
-        {
-            TriggerMoveForward();
-        }
-        else
-        {
-            TriggerMoveBackward();
-        }
     }
 
     /// <summary>
