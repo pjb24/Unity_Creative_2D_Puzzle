@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2935627579605551651}
   - component: {fileID: 3731195105098852351}
+  - component: {fileID: 1724549481957638380}
   - component: {fileID: -3042289259161926025}
   - component: {fileID: -1205083871401427816}
   - component: {fileID: -3595600386291163085}
@@ -90,6 +91,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1724549481957638380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8648324210662629277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33aab3778eb77614e8729cedeb459e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _floor: {fileID: -3042289259161926025}
 --- !u!114 &-3042289259161926025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,6 +123,10 @@ MonoBehaviour:
   _rotateSpeedDeg: 180
   _snapMode: 0
   _clockwise: 1
+  _startAnglePresetRaw: 0
+  _endAnglePresetRaw: 90
+  _presetDirection: 0
+  _snapToPresetOnStart: 0
   _passengerMask:
     serializedVersion: 2
     m_Bits: 4294967295

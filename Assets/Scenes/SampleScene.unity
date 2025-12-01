@@ -7542,7 +7542,7 @@ MonoBehaviour:
     m_Bits: 1024
   _deviceMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   _maxDistance: 100
   _maxBounce: 10
   _reflectionOffset: 1

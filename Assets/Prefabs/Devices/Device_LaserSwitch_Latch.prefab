@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -5144363924181863627}
   - component: {fileID: -943764881284801502}
   - component: {fileID: -8313331388363216911}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Device_LaserSwitch_Latch
   m_TagString: Untagged
   m_Icon: {fileID: 0}

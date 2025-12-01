@@ -1,11 +1,11 @@
 ///
-/// ¹Ì·¯´Â BoxCollider2D + Rigidbody2D(kinematic) + PushableMirror + GridObject.
-/// ÇÃ·¹ÀÌ¾î´Â Rigidbody2D(dynamic) + Collider2D.
+/// ë¯¸ëŸ¬ëŠ” BoxCollider2D + Rigidbody2D(kinematic) + PushableMirror + GridObject.
+/// í”Œë ˆì´ì–´ëŠ” Rigidbody2D(dynamic) + Collider2D.
 /// 
 /// 
-/// Pushable °Å¿ï
-/// - Interact ½Ã Player¿¡ "ºÎÂø" (pushing »óÅÂ).
-/// - Player°¡ ¹Ù¶óº¸´ø ¹æÇâÀÇ Ãà(axis)À¸·Î¸¸ °°ÀÌ ÀÌµ¿.
+/// Pushable ê±°ìš¸
+/// - Interact ì‹œ Playerì— "ë¶€ì°©" (pushing ìƒíƒœ).
+/// - Playerê°€ ë°”ë¼ë³´ë˜ ë°©í–¥ì˜ ì¶•(axis)ìœ¼ë¡œë§Œ ê°™ì´ ì´ë™.
 ///
 
 using UnityEngine;
@@ -21,44 +21,52 @@ public class PushableMirror : MonoBehaviour
     public bool IsAttached => _isAttached;
 
     private Transform _pusher;
-    private Vector2Int _axis;   // (1,0) ¶Ç´Â (0,1) Áß ÇÏ³ª (XÃà or YÃà)
+    private Vector2Int _axis;   // (1,0) ë˜ëŠ” (0,1) ì¤‘ í•˜ë‚˜ (Xì¶• or Yì¶•)
 
-    private Vector3 _localOffset;   // ÇÃ·¹ÀÌ¾î ±âÁØ À§Ä¡(¾Õ Ä­)
+    private Vector3 _localOffset;   // í”Œë ˆì´ì–´ ê¸°ì¤€ ìœ„ì¹˜(ì• ì¹¸)
+
+    private Collider2D _collider;
 
     private void Awake()
     {
         _gridObj = GetComponent<GridObject>();
         _rb = GetComponent<Rigidbody2D>();
-        _rb.bodyType = RigidbodyType2D.Kinematic;            // Á÷Á¢ À§Ä¡ Á¦¾î
+        _rb.bodyType = RigidbodyType2D.Kinematic;            // ì§ì ‘ ìœ„ì¹˜ ì œì–´
+
+        _collider = GetComponent<Collider2D>();
     }
 
     /// <summary>
-    /// Çª½Ã ½ÃÀÛ. ¹Ù¶óº¸´Â ¹æÇâ dir ±âÁØÀ¸·Î axis °áÁ¤.
-    /// dir Àº (1,0),(-1,0),(0,1),(0,-1) Áß ÇÏ³ª¶ó°í °¡Á¤.
+    /// í‘¸ì‹œ ì‹œì‘. ë°”ë¼ë³´ëŠ” ë°©í–¥ dir ê¸°ì¤€ìœ¼ë¡œ axis ê²°ì •.
+    /// dir ì€ (1,0),(-1,0),(0,1),(0,-1) ì¤‘ í•˜ë‚˜ë¼ê³  ê°€ì •.
     /// 
-    /// °Å¿ïÀ» pusherÀÇ ÀÚ½ÄÀ¸·Î ºÙ¿©¼­ È­¸é»óÀ¸·Î °°ÀÌ ¿òÁ÷ÀÌ°Ô ÇÔ
-    /// GridOccupancy¿¡¼­´Â ÀÏ´Ü Á¦°Å (ÀÌµ¿ Áß »óÅÂ)
+    /// ê±°ìš¸ì„ pusherì˜ ìì‹ìœ¼ë¡œ ë¶™ì—¬ì„œ í™”ë©´ìƒìœ¼ë¡œ ê°™ì´ ì›€ì§ì´ê²Œ í•¨
+    /// GridOccupancyì—ì„œëŠ” ì¼ë‹¨ ì œê±° (ì´ë™ ì¤‘ ìƒíƒœ)
     /// </summary>
     public bool BeginPush(Transform pusher, Vector2Int facingDir)
     {
         if (_isAttached) return false;
         if (facingDir == Vector2Int.zero) return false;
 
-        // Ãà¸¸ °¡Á®°£´Ù. (X or Y)
+        // ì¶•ë§Œ ê°€ì ¸ê°„ë‹¤. (X or Y)
         _axis = Mathf.Abs(facingDir.x) > 0
             ? new Vector2Int(1, 0)
             : new Vector2Int(0, 1);
 
-        // ±âÁ¸ ¼¿ Á¡À¯ ÇØÁ¦ (ÀÌµ¿ Áß »óÅÂ·Î Ãë±Ş)
+        // ê¸°ì¡´ ì…€ ì ìœ  í•´ì œ (ì´ë™ ì¤‘ ìƒíƒœë¡œ ì·¨ê¸‰)
         GridOccupancy.Instance.Unregister(_gridObj.CurrentCell);
+
+        _collider.enabled = false;
 
         _pusher = pusher;
         _isAttached = true;
 
-        // ÇÃ·¹ÀÌ¾î ¾Õ ÇÑ Ä­ Á¤µµ·Î ºÙ¿©µÎ´Â ¿ÀÇÁ¼Â
+        // í”Œë ˆì´ì–´ ì• í•œ ì¹¸ ì •ë„ë¡œ ë¶™ì—¬ë‘ëŠ” ì˜¤í”„ì…‹
         _localOffset = new Vector3(facingDir.x * 1.1f, facingDir.y * 1.1f, 0f);
         transform.SetParent(_pusher);
         transform.localPosition = _localOffset;
+
+        LaserWorldEvents.RaiseWorldChanged();
 
         Debug.Log($"PushableMirror {name} BeginPush. Axis={_axis}");
 
@@ -66,9 +74,9 @@ public class PushableMirror : MonoBehaviour
     }
 
     /// <summary>
-    /// Çª½Ã Á¾·á.
-    /// - ºÎ¸ğ ÇØÁ¦
-    /// - ÃÖÁ¾ ¿ùµå À§Ä¡ ±âÁØ ¼¿À» °è»êÇØ¼­ ´Ù½Ã GridOccupancy¿¡ µî·Ï
+    /// í‘¸ì‹œ ì¢…ë£Œ.
+    /// - ë¶€ëª¨ í•´ì œ
+    /// - ìµœì¢… ì›”ë“œ ìœ„ì¹˜ ê¸°ì¤€ ì…€ì„ ê³„ì‚°í•´ì„œ ë‹¤ì‹œ GridOccupancyì— ë“±ë¡
     /// </summary>
     public void EndPush()
     {
@@ -76,22 +84,24 @@ public class PushableMirror : MonoBehaviour
 
         _isAttached = false;
 
-        // ºÎ¸ğ ÇØÁ¦, ÇöÀç ¿ùµå ÁÂÇ¥ À¯Áö
+        // ë¶€ëª¨ í•´ì œ, í˜„ì¬ ì›”ë“œ ì¢Œí‘œ ìœ ì§€
         transform.SetParent(null);
 
-        // ÃÖÁ¾ À§Ä¡¸¦ ±×¸®µå¿¡ ½º³ÀÇØ¼­ ¼¿ µî·Ï
+        // ìµœì¢… ìœ„ì¹˜ë¥¼ ê·¸ë¦¬ë“œì— ìŠ¤ëƒ…í•´ì„œ ì…€ ë“±ë¡
         var worldPos = transform.position;
         var targetCell = GridUtil.WorldToCell(worldPos);
 
         if (GridOccupancy.Instance.IsOccupied(targetCell))
         {
-            // ÀÌ »óÈ²ÀÌ °Å½½¸®¸é, ÇÑ Ä­ µÚ·Î ¹Ğ°Å³ª, Push¸¦ ¸·´Â ¹æÇâÀ¸·Î Á¤Ã¥ ¼öÁ¤
-            Debug.LogWarning($"PushableMirror {name} EndPush: targetCell {targetCell} ÀÌ¹Ì Á¡À¯ Áß.");
+            // ì´ ìƒí™©ì´ ê±°ìŠ¬ë¦¬ë©´, í•œ ì¹¸ ë’¤ë¡œ ë°€ê±°ë‚˜, Pushë¥¼ ë§‰ëŠ” ë°©í–¥ìœ¼ë¡œ ì •ì±… ìˆ˜ì •
+            Debug.LogWarning($"PushableMirror {name} EndPush: targetCell {targetCell} ì´ë¯¸ ì ìœ  ì¤‘.");
         }
         else
         {
             GridOccupancy.Instance.TryRegister(_gridObj, targetCell);
         }
+
+        _collider.enabled = true;
 
         _pusher = null;
 
@@ -101,38 +111,38 @@ public class PushableMirror : MonoBehaviour
     }
 
     /// <summary>
-    /// ÇÃ·¹ÀÌ¾î°¡ deltaCell ¸¸Å­ ÀÌµ¿ÇÏ·Á ÇÒ ¶§
-    /// - ÀÌ ¹æÇâÀÌ ÇöÀç axis¿Í ¸Â´ÂÁö
-    /// - °Å¿ïÀÌ ±× ¹æÇâÀ¸·Î ÀÌµ¿ÇØµµ µÇ´ÂÁö(¾ÕÂÊ ¼¿¿¡ º®/Àå¾Ö¹° ÀÖ´ÂÁö) ¸¸ ÆÇ´Ü
-    /// * ¿©±â¼­´Â GridOccupancy µî·Ï/ÇØÁ¦¸¦ ÇÏÁö ¾Ê´Â´Ù *
+    /// í”Œë ˆì´ì–´ê°€ deltaCell ë§Œí¼ ì´ë™í•˜ë ¤ í•  ë•Œ
+    /// - ì´ ë°©í–¥ì´ í˜„ì¬ axisì™€ ë§ëŠ”ì§€
+    /// - ê±°ìš¸ì´ ê·¸ ë°©í–¥ìœ¼ë¡œ ì´ë™í•´ë„ ë˜ëŠ”ì§€(ì•ìª½ ì…€ì— ë²½/ì¥ì• ë¬¼ ìˆëŠ”ì§€) ë§Œ íŒë‹¨
+    /// * ì—¬ê¸°ì„œëŠ” GridOccupancy ë“±ë¡/í•´ì œë¥¼ í•˜ì§€ ì•ŠëŠ”ë‹¤ *
     /// </summary>
     public bool CanMoveWithPusher(Vector3Int deltaCell)
     {
-        if (!_isAttached) return true;  // Çª½Ã ÁßÀÌ ¾Æ´Ï¸é °Å¿ïÀº °ü¿© X
+        if (!_isAttached) return true;  // í‘¸ì‹œ ì¤‘ì´ ì•„ë‹ˆë©´ ê±°ìš¸ì€ ê´€ì—¬ X
 
-        // Ãà°ú ¾È ¸Â´Â ¹æÇâÀÌ¸é ¸ø ¿òÁ÷ÀÓ
+        // ì¶•ê³¼ ì•ˆ ë§ëŠ” ë°©í–¥ì´ë©´ ëª» ì›€ì§ì„
         if (_axis.x != 0 && deltaCell.y != 0) return false;
         if (_axis.y != 0 && deltaCell.x != 0) return false;
 
         if (deltaCell == Vector3Int.zero) return true;
 
-        // ÇöÀç °Å¿ïÀÌ ÀÖ´Â ¼¿ = ¿ùµå Æ÷Áö¼Ç ±âÁØ
+        // í˜„ì¬ ê±°ìš¸ì´ ìˆëŠ” ì…€ = ì›”ë“œ í¬ì§€ì…˜ ê¸°ì¤€
         var currentCell = GridUtil.WorldToCell(transform.position);
         var targetCell = currentCell + deltaCell;
 
-        // ¾Õ ¼¿¿¡ º®/ÀåÄ¡ µîÀ¸·Î "¸·Çô ÀÖ´ÂÁö"¸¸ Ã¼Å©
+        // ì• ì…€ì— ë²½/ì¥ì¹˜ ë“±ìœ¼ë¡œ "ë§‰í˜€ ìˆëŠ”ì§€"ë§Œ ì²´í¬
         if (GridOccupancy.Instance.IsOccupied(targetCell))
         {
-            Debug.Log($"PushableMirror {name}: targetCell {targetCell} ¸·Èû, ÀÌµ¿ ºÒ°¡.");
+            Debug.Log($"PushableMirror {name}: targetCell {targetCell} ë§‰í˜, ì´ë™ ë¶ˆê°€.");
             return false;
         }
 
-        // ÀÌµ¿Àº Player + ÀÚ½Ä ±¸Á¶°¡ ´ã´çÇÏ¹Ç·Î ¿©±â¼­´Â OK¸¸ ¹İÈ¯
+        // ì´ë™ì€ Player + ìì‹ êµ¬ì¡°ê°€ ë‹´ë‹¹í•˜ë¯€ë¡œ ì—¬ê¸°ì„œëŠ” OKë§Œ ë°˜í™˜
         return true;
     }
 
     /// <summary>
-    /// ÇöÀç Ãà ¹İÈ¯. (1,0) or (0,1)
+    /// í˜„ì¬ ì¶• ë°˜í™˜. (1,0) or (0,1)
     /// </summary>
     public Vector2Int GetAxis()
     {
