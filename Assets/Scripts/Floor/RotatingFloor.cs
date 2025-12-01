@@ -1,4 +1,4 @@
-﻿/// 
+/// 
 /// RotatingFloor (GridObject / GridOccupancy / GridUtil 연동
 /// · 회전 모드 선택 · 180° 래핑 이슈 해결 · "시작 각도 ↔ 끝 각도" 양방향 회전)
 /// - "Raw 각도 누적"으로 회전 방향 반전(±180 래핑) 문제 제거
@@ -208,7 +208,7 @@ public class RotatingFloor : MonoBehaviour
         bool arrived =
             (_rotateMode == E_RotateMode.DurationToTarget && _elapsed >= Mathf.Max(0.0001f, _rotateDuration))
             ||
-            (_rotateMode == E_RotateMode.SpeedDegPerSecond && Mathf.Approximately(_rawCurrentAngle, _rawTargetAngle));
+            (_rotateMode == E_RotateMode.SpeedDegPerSecond && ApproximatelyRelative(_rawCurrentAngle, _rawTargetAngle));
 
         if (arrived)
         {
@@ -395,7 +395,7 @@ public class RotatingFloor : MonoBehaviour
         GridOccupancy.Instance?.TryRegister(_gridObj, newCell);
 
         // 필요 시: 레이저/경로 리캐스트 통지
-        LaserWorldEvents.RaiseWorldChanged();
+        //LaserWorldEvents.RaiseWorldChanged();
     }
 
     private void RotatePassengers(float deltaAngleDeg)
@@ -618,5 +618,10 @@ public class RotatingFloor : MonoBehaviour
             GridOccupancy.Instance?.Unregister(oldCell);
             GridOccupancy.Instance?.TryRegister(gobj, newCell);
         }
+    }
+
+    private bool ApproximatelyRelative(float a, float b, float tolerance = 0.0001f)
+    {
+        return Mathf.Abs(a - b) <= tolerance * Mathf.Max(1f, Mathf.Max(Mathf.Abs(a), Mathf.Abs(b)));
     }
 }

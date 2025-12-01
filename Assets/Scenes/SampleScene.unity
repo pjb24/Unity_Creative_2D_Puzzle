@@ -4325,11 +4325,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6611097149470563963, guid: 66a807bac88064a4d8bf0be48824b952, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.3
+      value: 0.53
       objectReference: {fileID: 0}
     - target: {fileID: 6611097149470563963, guid: 66a807bac88064a4d8bf0be48824b952, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.5
+      value: 2.45
       objectReference: {fileID: 0}
     - target: {fileID: 6611097149470563963, guid: 66a807bac88064a4d8bf0be48824b952, type: 3}
       propertyPath: m_LocalPosition.z
@@ -7540,6 +7540,9 @@ MonoBehaviour:
   _doorMask:
     serializedVersion: 2
     m_Bits: 1024
+  _deviceMask:
+    serializedVersion: 2
+    m_Bits: 0
   _maxDistance: 100
   _maxBounce: 10
   _reflectionOffset: 1

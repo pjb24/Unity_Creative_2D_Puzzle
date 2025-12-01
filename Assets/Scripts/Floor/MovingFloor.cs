@@ -1,4 +1,4 @@
-﻿///
+///
 /// MovingFloor
 /// 
 /// 이동 방식
@@ -367,17 +367,17 @@ public class MovingFloor : MonoBehaviour
         _isMoving = false;
 
         // 1) 자기 자신 스냅
-        transform.position = GridUtil.CellToWorldCenter(_endCell);
+        transform.position = GridUtil.CellToWorldCenter(_toCell);
 
         // 2) GridObject.Cell 갱신 + 점유 갱신
         var oldCell = _gridObj.CurrentCell;
-        GridOccupancy.Instance?.TryRegister(_gridObj, _endCell);
+        GridOccupancy.Instance?.TryRegister(_gridObj, _toCell);
 
         // 탑승객 재등록
         ReRegisterPassengersToGrid();
 
         // 3) 외부 시스템(예: 레이저 리캐스트, 경로 동기화 등) 통지 필요 시 여기서 호출
-        LaserWorldEvents.RaiseWorldChanged();
+        //LaserWorldEvents.RaiseWorldChanged();
 
         SetPlayerInputLock(false);
         _passengers.Clear();

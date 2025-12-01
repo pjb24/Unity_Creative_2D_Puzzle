@@ -1,21 +1,24 @@
 ///
-/// LaserManager : ¸ğµç emitter °æ·Î °è»ê.
+/// LaserManager : ëª¨ë“  emitter ê²½ë¡œ ê³„ì‚°.
 /// 
-/// ±×¸®µå ±â¹İ ÆÛÁñÀÌ´Ï±î, ¼¿ ´ÜÀ§·Î ·¹ÀÌÄ³½ºÆ®ÇÏ´Â °Ô ¾ÈÁ¤Àû.
+/// ê·¸ë¦¬ë“œ ê¸°ë°˜ í¼ì¦ì´ë‹ˆê¹Œ, ì…€ ë‹¨ìœ„ë¡œ ë ˆì´ìºìŠ¤íŠ¸í•˜ëŠ” ê²Œ ì•ˆì •ì .
 /// 
-/// Dirty ÇÃ·¡±× ¼¼¿ì°í Update¿¡¼­ ÇÑ ¹ø¿¡ ¸®Ä³½ºÆ®ÇÏ´Â ±¸Á¶.
+/// Dirty í”Œë˜ê·¸ ì„¸ìš°ê³  Updateì—ì„œ í•œ ë²ˆì— ë¦¬ìºìŠ¤íŠ¸í•˜ëŠ” êµ¬ì¡°.
 /// 
 /// 
-/// _wallMask : º®, ÆÛÁñ¿¡ »ç¿ëµÇ´Â Block ·¹ÀÌ¾îµé
-/// _mirrorMask : °Å¿ïµé
-/// ¹®(door)Àº ·¹ÀÌÀú Ãæµ¹ ´ë»ó¿¡¼­ »©¸é ¡æ ÀÚµ¿À¸·Î Åë°ú
-/// ¹®µµ ¸ÂÃß°í ½ÍÀ¸¸é Door¿ë Layer + Raycast, Hit ½Ã ¡°±×³É Áö³ª°¨¡± Ã³¸®¸¸ ÇÏ°í °è¼Ó ÁøÇà.
+/// _wallMask : ë²½, í¼ì¦ì— ì‚¬ìš©ë˜ëŠ” Block ë ˆì´ì–´ë“¤
+/// _mirrorMask : ê±°ìš¸ë“¤
+/// ë¬¸(door)ì€ ë ˆì´ì € ì¶©ëŒ ëŒ€ìƒì—ì„œ ë¹¼ë©´ â†’ ìë™ìœ¼ë¡œ í†µê³¼
+/// ë¬¸ë„ ë§ì¶”ê³  ì‹¶ìœ¼ë©´ Doorìš© Layer + Raycast, Hit ì‹œ â€œê·¸ëƒ¥ ì§€ë‚˜ê°â€ ì²˜ë¦¬ë§Œ í•˜ê³  ê³„ì† ì§„í–‰.
+/// 
+/// íˆíŠ¸ ëª©ë¡ ë¹„êµ ë°©ì‹ìœ¼ë¡œ LaserReceiverPortì— LaserEnter/Exit í˜¸ì¶œ
 ///
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[DefaultExecutionOrder(-5)]
+[DefaultExecutionOrder(-40)]
 public class LaserManager : MonoBehaviour
 {
     public enum E_HitObjectType
@@ -24,6 +27,7 @@ public class LaserManager : MonoBehaviour
         Wall,
         Mirror,
         Door,
+        Device,
     }
 
     public static LaserManager Instance { get; private set; }
@@ -31,13 +35,17 @@ public class LaserManager : MonoBehaviour
     [SerializeField] private LayerMask _wallMask;
     [SerializeField] private LayerMask _mirrorMask;
     [SerializeField] private LayerMask _doorMask;
+    [SerializeField] private LayerMask _deviceMask;
     [SerializeField] private float _maxDistance = 100f;
     [SerializeField] private int _maxBounce = 10;
 
-    [SerializeField] private float _reflectionOffset = 1f;
+    [SerializeField] private float _reflectionOffset = 0.5f;
 
     private readonly List<LaserEmitter> _emitters = new();
-    private bool _isDirty = true;   // ¸®Ä³½ºÆ® ÇÊ¿ä ÇÃ·¡±×
+    private bool _isDirty = true;   // ë¦¬ìºìŠ¤íŠ¸ í•„ìš” í”Œë˜ê·¸
+
+    // emitterë³„ ì´ì „ íˆíŠ¸ í¬íŠ¸ ì§‘í•©(íˆíŠ¸ ëª©ë¡ ë¹„êµìš©)
+    private readonly Dictionary<LaserEmitter, HashSet<LaserReceiverPort>> _prevReceiversPerEmitter = new();
 
     private void Awake()
     {
@@ -51,12 +59,14 @@ public class LaserManager : MonoBehaviour
 
     private void OnEnable()
     {
-        LaserWorldEvents.OnWorldChanged += MarkDirty;
+        //LaserWorldEvents.OnWorldChanged += MarkDirty;
+        LaserWorldEvents.OnWorldChanged += StartMarkDirtyCoroutine;
     }
 
     private void OnDisable()
     {
-        LaserWorldEvents.OnWorldChanged -= MarkDirty;
+        //LaserWorldEvents.OnWorldChanged -= MarkDirty;
+        LaserWorldEvents.OnWorldChanged += StartMarkDirtyCoroutine;
     }
 
     private void Update()
@@ -70,18 +80,49 @@ public class LaserManager : MonoBehaviour
     public void RegisterEmitter(LaserEmitter emitter)
     {
         if (!_emitters.Contains(emitter))
+        {
             _emitters.Add(emitter);
+        }
+
+        if (!_prevReceiversPerEmitter.ContainsKey(emitter))
+        {
+            _prevReceiversPerEmitter[emitter] = new HashSet<LaserReceiverPort>();
+        }
+
         MarkDirty();
     }
 
     public void UnregisterEmitter(LaserEmitter emitter)
     {
+        // ê¸°ì¡´ì— íˆíŠ¸ ì¤‘ì´ë˜ í¬íŠ¸ë“¤ì— Exit ì „ë‹¬
+        if (emitter != null && _prevReceiversPerEmitter.TryGetValue(emitter, out var prev))
+        {
+            foreach (var r in prev)
+            {
+                r?.LaserExit();
+            }
+            _prevReceiversPerEmitter.Remove(emitter);
+        }
+
         _emitters.Remove(emitter);
+
         MarkDirty();
+    }
+
+    public void StartMarkDirtyCoroutine()
+    {
+        StartCoroutine(MarkDirtyCoroutine());
     }
 
     public void MarkDirty()
     {
+        _isDirty = true;
+    }
+
+    private IEnumerator MarkDirtyCoroutine()
+    {
+        yield return new WaitForFixedUpdate();
+
         _isDirty = true;
     }
 
@@ -93,6 +134,18 @@ public class LaserManager : MonoBehaviour
             {
                 CalculateLaserPath(emitter);
             }
+            else
+            {
+                // ë¹„í™œì„±/ëˆ„ë½ëœ ê²½ìš°ì—ë„ ì•ˆì „í•˜ê²Œ Exit ì²˜ë¦¬
+                if (emitter != null && _prevReceiversPerEmitter.TryGetValue(emitter, out var prev))
+                {
+                    foreach (var r in prev)
+                    {
+                        r?.LaserExit();
+                    }
+                    _prevReceiversPerEmitter[emitter].Clear();
+                }
+            }
         }
     }
 
@@ -101,6 +154,8 @@ public class LaserManager : MonoBehaviour
         if (emitter.Line == null) return;
 
         List<Vector3> points = new List<Vector3>();
+        // ì´ë²ˆ í”„ë ˆì„(ë˜ëŠ” ì´ë²ˆ ì¬ê³„ì‚°)ì˜ íˆíŠ¸ í¬íŠ¸ ì§‘í•©
+        HashSet<LaserReceiverPort> newReceivers = new HashSet<LaserReceiverPort>();
 
         Vector3 origin = emitter.transform.position;
         Vector2Int dirInt = emitter.Direction;
@@ -114,13 +169,15 @@ public class LaserManager : MonoBehaviour
             RaycastHit2D hitWall = Physics2D.Raycast(origin, dir, _maxDistance, _wallMask);
             RaycastHit2D hitMirror = Physics2D.Raycast(origin, dir, _maxDistance, _mirrorMask);
             RaycastHit2D hitDoor = Physics2D.Raycast(origin, dir, _maxDistance, _doorMask);
+            RaycastHit2D hitDevice = Physics2D.Raycast(origin, dir, _maxDistance, _deviceMask);
 
             bool hasWall = hitWall.collider != null;
             bool hasMirror = hitMirror.collider != null;
             bool hasDoor = hitDoor.collider != null;
+            bool hasDevice = hitDevice.collider != null;
 
-            // ¾Æ¹«°Íµµ ¾È ¸ÂÀ¸¸é Á÷¼± ³¡±îÁö ½î°í Á¾·á
-            if (!hasWall && !hasMirror && !hasDoor)
+            // ì•„ë¬´ê²ƒë„ ì•ˆ ë§ìœ¼ë©´ ì§ì„  ëê¹Œì§€ ì˜ê³  ì¢…ë£Œ
+            if (!hasWall && !hasMirror && !hasDoor && !hasDevice)
             {
                 Vector3 endPoint = origin + (Vector3)dir * _maxDistance;
                 points.Add(endPoint);
@@ -128,65 +185,152 @@ public class LaserManager : MonoBehaviour
                 break;
             }
 
-            // ¸ÂÀº °Í Áß ´õ °¡±î¿î °Í ¼±ÅÃ
+            // ë§ì€ ê²ƒ ì¤‘ ë” ê°€ê¹Œìš´ ê²ƒ ì„ íƒ
             float wallDist = hasWall ? hitWall.distance : float.MaxValue;
             float mirrorDist = hasMirror ? hitMirror.distance : float.MaxValue;
             float doorDist = hasDoor ? hitDoor.distance : float.MaxValue;
+            float deviceDist = hasDevice ? hitDevice.distance : float.MaxValue;
 
+            // ê°€ì¥ ê°€ê¹Œìš´ í›„ë³´ ë° ê·¸ íˆíŠ¸ ì •ë³´ ë³´ê´€
             E_HitObjectType closest = E_HitObjectType.None;
-            if (wallDist < float.MaxValue)
+            RaycastHit2D closestHit = new RaycastHit2D();
+            float closestDist = float.MaxValue;
+
+            // ë²½
+            if (wallDist < closestDist)
             {
                 closest = E_HitObjectType.Wall;
+                closestHit = hitWall;
+                closestDist = wallDist;
             }
-            if (mirrorDist < wallDist)
+            // ê±°ìš¸
+            if (mirrorDist < closestDist)
             {
                 closest = E_HitObjectType.Mirror;
+                closestHit = hitMirror;
+                closestDist = mirrorDist;
             }
-            if (doorDist < mirrorDist)
+            // ë¬¸
+            if (doorDist < closestDist)
             {
                 closest = E_HitObjectType.Door;
+                closestHit = hitDoor;
+                closestDist = doorDist;
+            }
+            // ì¥ì¹˜
+            if (deviceDist < closestDist)
+            {
+                closest = E_HitObjectType.Device;
+                closestHit = hitDevice;
+                closestDist = deviceDist;
             }
 
-            if (closest == E_HitObjectType.None ||  closest == E_HitObjectType.Door)
+            // íˆíŠ¸ ëŒ€ìƒì— ì¥ì°©ëœ LaserReceiverPort ìˆ˜ì§‘(ë¬¸/ê±°ìš¸/ë²½ ì–´ëŠ ìª½ì´ë“  ìˆ˜ì§‘ ì‹œë„)
+            if (closest != E_HitObjectType.None && closestHit.collider != null)
             {
-                origin = (Vector3)hitDoor.point + (Vector3)dir * _reflectionOffset;
-                continue; // °è¼Ó ½ô
+                var receiver = closestHit.collider.GetComponentInParent<LaserReceiverPort>();
+                if (receiver != null)
+                {
+                    newReceivers.Add(receiver);
+                }
+            }
+
+            if (closest == E_HitObjectType.None)
+            {
+                // ì•ˆì „ë§: ì—†ìœ¼ë©´ ì§ì„ ìœ¼ë¡œ ë§ˆê°
+                Vector3 endPoint = origin + (Vector3)dir * _maxDistance;
+                points.Add(endPoint);
+                break;
+            }
+            else if (closest == E_HitObjectType.Door)
+            {
+                // ë¬¸ì€ "ë§ì¶”ë˜" í†µê³¼. í¬ì¸íŠ¸ëŠ” ê·¸ë ¤ë„ ë˜ê³  ìƒëµ ê°€ëŠ¥.
+                // í¬ì¸íŠ¸ ì‚´ì§ í¬í•¨í•´ ë””ë²„ê·¸ ê°€ì‹œì„± í™•ë³´
+                Vector3 hitPos = closestHit.point + (dir * _reflectionOffset);
+                points.Add(hitPos);
+
+                origin = hitPos + (Vector3)dir * _reflectionOffset;
+                continue; // ê³„ì† ì¨
             }
             else if (closest == E_HitObjectType.Mirror)
             {
-                // ¸ÕÀú °Å¿ï¿¡ ¸ÂÀ½
-                Vector3 hitPos = hitMirror.point + (dir * 0.5f);
+                // ê±°ìš¸ì— ë¨¼ì € ë§ìŒ
+                Vector3 hitPos = closestHit.point + (dir * _reflectionOffset);
                 points.Add(hitPos);
 
-                // »õ·Î¿î ¹æÇâ °è»ê
-                Mirror mirror = hitMirror.collider.GetComponent<Mirror>();
+                // ìƒˆë¡œìš´ ë°©í–¥ ê³„ì‚°
+                Mirror mirror = closestHit.collider.GetComponent<Mirror>();
                 if (mirror == null)
                 {
-                    // Mirror ÄÄÆ÷³ÍÆ® ¾øÀ¸¸é ¸·Èù °É·Î Ãë±Ş
+                    // Mirror ì»´í¬ë„ŒíŠ¸ ì—†ìœ¼ë©´ ë§‰íŒ ê±¸ë¡œ ì·¨ê¸‰
                     break;
                 }
 
                 dirInt = mirror.Reflect(dirInt);
                 dir = dirInt;
 
-                // ¹İ»ç ÁöÁ¡¿¡¼­ Á¶±İ ¶¼°í ´Ù½Ã ½ô(ÀÚ±â ÀÚ½Å ´Ù½Ã ¸Â´Â °Í ¹æÁö)
+                // ë°˜ì‚¬ ì§€ì ì—ì„œ ì¡°ê¸ˆ ë–¼ê³  ë‹¤ì‹œ ì¨(ìê¸° ìì‹  ë‹¤ì‹œ ë§ëŠ” ê²ƒ ë°©ì§€)
                 origin = hitPos + (Vector3)dir * _reflectionOffset;
                 bounceCount++;
                 continue;
             }
             else if (closest == E_HitObjectType.Wall)
             {
-                // º®¿¡ ¸ÕÀú ¸ÂÀ½
-                Vector3 hitPos = hitWall.point;
+                // ë²½ì— ë¨¼ì € ë§ìŒ
+                Vector3 hitPos = closestHit.point;
                 points.Add(hitPos);
-                // º®¿¡¼­ ·¹ÀÌÀú Á¾·á
+                // ë²½ì—ì„œ ë ˆì´ì € ì¢…ë£Œ
 
                 break;
             }
+            else if (closest == E_HitObjectType.Device)
+            {
+                // ì¥ì¹˜ëŠ” "ë§ì¶”ë˜" í†µê³¼. í¬ì¸íŠ¸ëŠ” ê·¸ë ¤ë„ ë˜ê³  ìƒëµ ê°€ëŠ¥.
+                // í¬ì¸íŠ¸ ì‚´ì§ í¬í•¨í•´ ë””ë²„ê·¸ ê°€ì‹œì„± í™•ë³´
+                Vector3 hitPos = closestHit.point + (dir * _reflectionOffset);
+                points.Add(hitPos);
+
+                origin = hitPos + (Vector3)dir * _reflectionOffset;
+                continue; // ê³„ì† ì¨
+            }
         }
 
-        // LineRenderer¿¡ Æ÷ÀÎÆ® ÁöÁ¤
+        // LineRendererì— í¬ì¸íŠ¸ ì§€ì •
         emitter.Line.positionCount = points.Count;
         emitter.Line.SetPositions(points.ToArray());
+
+        // === íˆíŠ¸ ëª©ë¡ ë¹„êµë¡œ Enter/Exit í˜¸ì¶œ ===
+        if (!_prevReceiversPerEmitter.TryGetValue(emitter, out var prevReceivers))
+        {
+            prevReceivers = new HashSet<LaserReceiverPort>();
+            _prevReceiversPerEmitter[emitter] = prevReceivers;
+        }
+
+        // EXIT: ì´ì „ì—” ìˆì—ˆëŠ”ë° ì´ë²ˆì—” ì—†ëŠ” í¬íŠ¸
+        foreach (var prev in prevReceivers)
+        {
+            if (prev == null) continue; // íŒŒê´´ ë°©ì–´
+            if (!newReceivers.Contains(prev))
+            {
+                prev.LaserExit();
+            }
+        }
+
+        // ENTER: ì´ë²ˆì— ìƒˆë¡œ ë“¤ì–´ì˜¨ í¬íŠ¸
+        foreach (var curr in newReceivers)
+        {
+            if (curr == null) continue;
+            if (!prevReceivers.Contains(curr))
+            {
+                curr.LaserEnter();
+            }
+        }
+
+        // ìƒíƒœ êµì²´(ì°¸ì¡° ë³µì‚¬ ëŒ€ì‹  ë‚´ìš© êµì²´ë¡œ GC ê°ì†Œ)
+        prevReceivers.Clear();
+        foreach (var r in newReceivers)
+        {
+            prevReceivers.Add(r);
+        }
     }
 }
