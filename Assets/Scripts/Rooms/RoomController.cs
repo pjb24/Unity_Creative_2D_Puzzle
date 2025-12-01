@@ -1,8 +1,8 @@
 ///
-/// Room ID, Ä«¸Ş¶ó Áß½É, Door °ü¸®
+/// Room ID, ì¹´ë©”ë¼ ì¤‘ì‹¬, Door ê´€ë¦¬
 /// 
 /// 
-/// Room ÇÏ³ª´ç RoomController ºÙÀÌ°í, DoorµéÀ» ÀÚ½ÄÀ¸·Î ¹èÄ¡ ¡æ Door ºÙÀÌ±â
+/// Room í•˜ë‚˜ë‹¹ RoomController ë¶™ì´ê³ , Doorë“¤ì„ ìì‹ìœ¼ë¡œ ë°°ì¹˜ â†’ Door ë¶™ì´ê¸°
 /// 
 /// 
 ///
@@ -15,8 +15,8 @@ public class RoomController : MonoBehaviour
     [SerializeField] private string _roomId;
 
     [Header("Camera")]
-    [SerializeField] private Vector2 _cameraCenterOffset; // Room ±âÁØ Ä«¸Ş¶ó Áß½É ¿ÀÇÁ¼Â
-    [SerializeField] private Vector2 _roomSize = new Vector2(18, 10); // µğ¹ö±×¿ë, ¼±ÅÃ»çÇ×
+    [SerializeField] private Vector2 _cameraCenterOffset; // Room ê¸°ì¤€ ì¹´ë©”ë¼ ì¤‘ì‹¬ ì˜¤í”„ì…‹
+    [SerializeField] private Vector2 _roomSize = new Vector2(18, 10); // ë””ë²„ê·¸ìš©, ì„ íƒì‚¬í•­
 
     [Header("Doors")]
     [SerializeField] private List<Door> _doors = new List<Door>();
@@ -29,7 +29,7 @@ public class RoomController : MonoBehaviour
 
     private void Awake()
     {
-        // RoomManager µî·Ï
+        // RoomManager ë“±ë¡
         if (RoomManager.Instance != null)
         {
             RoomManager.Instance.RegisterRoom(this);
@@ -38,7 +38,7 @@ public class RoomController : MonoBehaviour
 
     public Vector3 GetCameraCenterWorld()
     {
-        // RoomÀÇ ±âÁØ À§Ä¡ + ¿ÀÇÁ¼Â
+        // Roomì˜ ê¸°ì¤€ ìœ„ì¹˜ + ì˜¤í”„ì…‹
         return transform.position + (Vector3)_cameraCenterOffset;
     }
 
@@ -59,13 +59,13 @@ public class RoomController : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        // Room Bounds ½Ã°¢È­ (¼±ÅÃ»çÇ×)
+        // Room Bounds ì‹œê°í™” (ì„ íƒì‚¬í•­)
         Gizmos.color = Color.yellow;
         var center = transform.position;
         var size = new Vector3(_roomSize.x, _roomSize.y, 0f);
         Gizmos.DrawWireCube(center, size);
 
-        // Ä«¸Ş¶ó Áß½É Ç¥½Ã
+        // ì¹´ë©”ë¼ ì¤‘ì‹¬ í‘œì‹œ
         Gizmos.color = Color.cyan;
         Gizmos.DrawSphere(GetCameraCenterWorld(), 0.2f);
     }

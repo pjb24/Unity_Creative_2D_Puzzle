@@ -1,8 +1,8 @@
 ///
-/// °æ·Î¸¦ µû¶ó ÇÑ Ä­¾¿ ÀÌµ¿ÇÏ´Â °Å¿ï
-/// - GridObject + GridOccupancy ±â¹İ
-/// - _pathCells ¿¡ Á¤ÀÇµÈ ¼¿µé¸¸ ÀÌµ¿ °¡´É
-/// - Occupancy Ã¼Å© ÈÄ ÀÌµ¿
+/// ê²½ë¡œë¥¼ ë”°ë¼ í•œ ì¹¸ì”© ì´ë™í•˜ëŠ” ê±°ìš¸
+/// - GridObject + GridOccupancy ê¸°ë°˜
+/// - _pathCells ì— ì •ì˜ëœ ì…€ë“¤ë§Œ ì´ë™ ê°€ëŠ¥
+/// - Occupancy ì²´í¬ í›„ ì´ë™
 ///
 
 using UnityEngine;
@@ -13,16 +13,16 @@ using System.Collections;
 public class PathMirror : MonoBehaviour
 {
     [Header("Path Settings")]
-    [Tooltip("ÀÌ °Å¿ïÀÌ µû¶ó°¥ ±×¸®µå ¼¿ °æ·Î (¿ùµå Grid ±âÁØ ¼¿ ÁÂÇ¥)")]
+    [Tooltip("ì´ ê±°ìš¸ì´ ë”°ë¼ê°ˆ ê·¸ë¦¬ë“œ ì…€ ê²½ë¡œ (ì›”ë“œ Grid ê¸°ì¤€ ì…€ ì¢Œí‘œ)")]
     [SerializeField] private Vector3Int[] _pathCells;
 
-    [Tooltip("½ÃÀÛ ÀÎµ¦½º (path ¹è¿­ ±âÁØ)")]
+    [Tooltip("ì‹œì‘ ì¸ë±ìŠ¤ (path ë°°ì—´ ê¸°ì¤€)")]
     [SerializeField] private int _startIndex = 0;
 
-    [Tooltip("°æ·Î ³¡¿¡¼­ ´õ ÀÌ»ó ÀÌµ¿ ¸øÇÏ°Ô ÇÒÁö ¿©ºÎ (false¸é ³¡¿¡¼­ ¸ØÃã)")]
+    [Tooltip("ê²½ë¡œ ëì—ì„œ ë” ì´ìƒ ì´ë™ ëª»í•˜ê²Œ í• ì§€ ì—¬ë¶€ (falseë©´ ëì—ì„œ ë©ˆì¶¤)")]
     [SerializeField] private bool _loop = true;
 
-    public float pushDuration = 0.1f;      // ÇÑ Å¸ÀÏ ¹Ğ¸®´Â ½Ã°£
+    public float pushDuration = 0.1f;      // í•œ íƒ€ì¼ ë°€ë¦¬ëŠ” ì‹œê°„
 
     private GridObject _gridObj;
     private Rigidbody2D _rb;
@@ -41,20 +41,20 @@ public class PathMirror : MonoBehaviour
     {
         if (_pathCells == null || _pathCells.Length == 0)
         {
-            Debug.LogWarning($"PathMirror {name}: pathCells ºñ¾îÀÖÀ½.");
+            Debug.LogWarning($"PathMirror {name}: pathCells ë¹„ì–´ìˆìŒ.");
             return;
         }
 
-        // ÀÎµ¦½º º¸Á¤
+        // ì¸ë±ìŠ¤ ë³´ì •
         _currentIndex = Mathf.Clamp(_startIndex, 0, _pathCells.Length - 1);
 
-        // ÃÊ±â À§Ä¡¸¦ °æ·Î »ó À§Ä¡·Î º¸Á¤
+        // ì´ˆê¸° ìœ„ì¹˜ë¥¼ ê²½ë¡œ ìƒ ìœ„ì¹˜ë¡œ ë³´ì •
         var currentCell = _pathCells[_currentIndex];
         if (_gridObj.CurrentCell != currentCell)
         {
             Debug.LogWarning(
-                    $"PathMirror {name}: GridObject.CurrentCell({_gridObj.CurrentCell})°ú " +
-                    $"pathCells[{_currentIndex}]({currentCell}) ºÒÀÏÄ¡. °æ·Î ±âÁØ ¼¿·Î ÀÌµ¿½ÃÅ´."
+                    $"PathMirror {name}: GridObject.CurrentCell({_gridObj.CurrentCell})ê³¼ " +
+                    $"pathCells[{_currentIndex}]({currentCell}) ë¶ˆì¼ì¹˜. ê²½ë¡œ ê¸°ì¤€ ì…€ë¡œ ì´ë™ì‹œí‚´."
                 );
             GridOccupancy.Instance.Unregister(_gridObj.CurrentCell);
             GridOccupancy.Instance.TryRegister(_gridObj, currentCell);
@@ -64,8 +64,8 @@ public class PathMirror : MonoBehaviour
     }
 
     /// <summary>
-    /// step = +1 ÀÌ¸é ´ÙÀ½ ¼¿, -1 ÀÌ¸é ÀÌÀü ¼¿.
-    /// ÀÌµ¿¿¡ ¼º°øÇÏ¸é true ¹İÈ¯.
+    /// step = +1 ì´ë©´ ë‹¤ìŒ ì…€, -1 ì´ë©´ ì´ì „ ì…€.
+    /// ì´ë™ì— ì„±ê³µí•˜ë©´ true ë°˜í™˜.
     /// </summary>
     public bool TryMove(int step)
     {
@@ -79,10 +79,10 @@ public class PathMirror : MonoBehaviour
 
         int targetIndex = _currentIndex + step;
 
-        // ·çÇÁ Ã³¸®
+        // ë£¨í”„ ì²˜ë¦¬
         if (_loop)
         {
-            // À½¼ö º¸Á¤
+            // ìŒìˆ˜ ë³´ì •
             if (targetIndex < 0)
                 targetIndex = _pathCells.Length - 1;
             else if (targetIndex >= _pathCells.Length)
@@ -90,28 +90,28 @@ public class PathMirror : MonoBehaviour
         }
         else
         {
-            // ·çÇÁ ¾ÈÇÒ °æ¿ì ¹üÀ§ ¹ÛÀÌ¸é ÀÌµ¿ ºÒ°¡
+            // ë£¨í”„ ì•ˆí•  ê²½ìš° ë²”ìœ„ ë°–ì´ë©´ ì´ë™ ë¶ˆê°€
             if (targetIndex < 0 || targetIndex >= _pathCells.Length)
             {
-                Debug.Log($"PathMirror {name}: °æ·Î ³¡, ´õ ÀÌ»ó ÀÌµ¿ ºÒ°¡ (index={targetIndex}).");
+                Debug.Log($"PathMirror {name}: ê²½ë¡œ ë, ë” ì´ìƒ ì´ë™ ë¶ˆê°€ (index={targetIndex}).");
                 return false;
             }
         }
 
         var targetCell = _pathCells[targetIndex];
 
-        // ÀÚ±â ÀÚ½ÅÀÌ ÀÌ¹Ì Á¡À¯ÇÏ°í ÀÖ´Â ¼¿·Î ÀÌµ¿ ¿äÃ»ÀÌ¸é ¹«½Ã
+        // ìê¸° ìì‹ ì´ ì´ë¯¸ ì ìœ í•˜ê³  ìˆëŠ” ì…€ë¡œ ì´ë™ ìš”ì²­ì´ë©´ ë¬´ì‹œ
         if (_gridObj.CurrentCell == targetCell)
             return false;
 
-        // Á¡À¯ Ã¼Å©
+        // ì ìœ  ì²´í¬
         if (GridOccupancy.Instance.IsOccupied(targetCell))
         {
-            Debug.Log($"PathMirror {name}: targetCell {targetCell} Á¡À¯ Áß, ÀÌµ¿ ºÒ°¡.");
+            Debug.Log($"PathMirror {name}: targetCell {targetCell} ì ìœ  ì¤‘, ì´ë™ ë¶ˆê°€.");
             return false;
         }
 
-        // ±âÁ¸ ¼¿ ÇØÁ¦ + »õ ¼¿ µî·Ï
+        // ê¸°ì¡´ ì…€ í•´ì œ + ìƒˆ ì…€ ë“±ë¡
         var pushDir = targetCell - _gridObj.CurrentCell;
         TryStartPush((Vector2Int)pushDir);
 
@@ -119,13 +119,13 @@ public class PathMirror : MonoBehaviour
 
         LaserWorldEvents.RaiseWorldChanged();
 
-        Debug.Log($"PathMirror {name}: index {_currentIndex} / cell {targetCell} ·Î ÀÌµ¿.");
+        Debug.Log($"PathMirror {name}: index {_currentIndex} / cell {targetCell} ë¡œ ì´ë™.");
 
         return true;
     }
 
     /// <summary>
-    /// ´ÙÀ½ ¼¿·Î ÀÌµ¿ ½Ãµµ (°æ·Î¿¡¼­ +1)
+    /// ë‹¤ìŒ ì…€ë¡œ ì´ë™ ì‹œë„ (ê²½ë¡œì—ì„œ +1)
     /// </summary>
     public bool TryMoveNext()
     {
@@ -133,7 +133,7 @@ public class PathMirror : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀÌÀü ¼¿·Î ÀÌµ¿ ½Ãµµ (°æ·Î¿¡¼­ -1)
+    /// ì´ì „ ì…€ë¡œ ì´ë™ ì‹œë„ (ê²½ë¡œì—ì„œ -1)
     /// </summary>
     public bool TryMovePrev()
     {
@@ -148,7 +148,7 @@ public class PathMirror : MonoBehaviour
         Vector3Int currentCell = _gridObj.CurrentCell;
         Vector3Int targetCell = currentCell + new Vector3Int(dir.x, dir.y, 0);
 
-        // Å¸°Ù ¼¿ÀÌ ¸·Çô ÀÖÀ¸¸é ¹ĞÁö ¾ÊÀ½
+        // íƒ€ê²Ÿ ì…€ì´ ë§‰í˜€ ìˆìœ¼ë©´ ë°€ì§€ ì•ŠìŒ
         if (occ.IsBlockedCell(targetCell))
             return;
 
@@ -163,8 +163,8 @@ public class PathMirror : MonoBehaviour
         Vector3 endPos = GridUtil.CellToWorldCenter(toCell);
         float t = 0f;
 
-        // ¹Ğ¸®´Â µ¿¾È ±×¸®µå Á¡À¯´Â "µµÂø ½ÃÁ¡"¿¡ ¾÷µ¥ÀÌÆ®
-        // (ÇÊ¿äÇÏ¸é ½ÃÀÛÇÒ ¶§ ÀÓ½Ã Á¡À¯ ¿¹¾à ·ÎÁ÷À» Ãß°¡ °¡´É)
+        // ë°€ë¦¬ëŠ” ë™ì•ˆ ê·¸ë¦¬ë“œ ì ìœ ëŠ” "ë„ì°© ì‹œì "ì— ì—…ë°ì´íŠ¸
+        // (í•„ìš”í•˜ë©´ ì‹œì‘í•  ë•Œ ì„ì‹œ ì ìœ  ì˜ˆì•½ ë¡œì§ì„ ì¶”ê°€ ê°€ëŠ¥)
         while (t < pushDuration)
         {
             t += Time.deltaTime;
@@ -174,7 +174,7 @@ public class PathMirror : MonoBehaviour
             yield return null;
         }
 
-        // ¸¶Áö¸·¿¡ GridOccupancy »óÀÇ ¼¿ Á¤º¸ ¾÷µ¥ÀÌÆ® + À§Ä¡ ½º³À
+        // ë§ˆì§€ë§‰ì— GridOccupancy ìƒì˜ ì…€ ì •ë³´ ì—…ë°ì´íŠ¸ + ìœ„ì¹˜ ìŠ¤ëƒ…
         GridOccupancy.Instance.TryMove(_gridObj, toCell);
 
         OnPushFinished();
@@ -182,10 +182,10 @@ public class PathMirror : MonoBehaviour
         _isMoving = false;
     }
 
-    // ¿¹: MirrorMover¿¡¼­ ÇÑ Ä­ ¹Ğ±â ³¡³­ ½ÃÁ¡
+    // ì˜ˆ: MirrorMoverì—ì„œ í•œ ì¹¸ ë°€ê¸° ëë‚œ ì‹œì 
     private void OnPushFinished()
     {
-        // À§Ä¡ ½º³À µî Ã³¸® ÈÄ
+        // ìœ„ì¹˜ ìŠ¤ëƒ… ë“± ì²˜ë¦¬ í›„
         LaserWorldEvents.RaiseWorldChanged();
     }
 
@@ -201,7 +201,7 @@ public class PathMirror : MonoBehaviour
             var cell = _pathCells[i];
             var world = GridOccupancy.Instance != null
                 ? GridUtil.CellToWorldCenter(cell)
-                : (Vector3)cell; // ÀÓ½Ã
+                : (Vector3)cell; // ì„ì‹œ
 
             Gizmos.DrawSphere(world, 0.08f);
 

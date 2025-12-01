@@ -3,7 +3,7 @@ using UnityEngine;
 public class DeviceOutputBinder : MonoBehaviour
 {
     [SerializeField] LaserSwitchDevice _device;
-    [SerializeField] MonoBehaviour[] _targets; // IActivatable ±¸ÇöÃ¼(Door, WallToggle µî)
+    [SerializeField] MonoBehaviour[] _targets; // IActivatable êµ¬í˜„ì²´(Door, WallToggle ë“±)
 
     void Awake()
     {

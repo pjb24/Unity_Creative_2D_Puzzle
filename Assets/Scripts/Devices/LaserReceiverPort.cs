@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class LaserReceiverPort : MonoBehaviour
 {
-    [SerializeField] LaserSwitchDevice _device;  // ¾Æ·¡ Á¤Ã¥ ÀåÄ¡¿¡ ¿¬°á
+    [SerializeField] LaserSwitchDevice _device;  // ì•„ë˜ ì •ì±… ì¥ì¹˜ì— ì—°ê²°
 
     public void LaserEnter()
     {

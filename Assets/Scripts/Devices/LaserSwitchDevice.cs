@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public enum E_LaserPolicy { OnEnterLatch, WhileHeld }  // 1È¸ ·¡Ä¡ / ´©¸£°í ÀÖ´Â µ¿¾È¸¸
+public enum E_LaserPolicy { OnEnterLatch, WhileHeld }  // 1íšŒ ë˜ì¹˜ / ëˆ„ë¥´ê³  ìˆëŠ” ë™ì•ˆë§Œ
 
 public class LaserSwitchDevice : MonoBehaviour
 {
@@ -9,7 +9,7 @@ public class LaserSwitchDevice : MonoBehaviour
     private bool _isHeld;
     private bool _latched;
 
-    public event Action<bool> OnOutput; // true = È°¼º
+    public event Action<bool> OnOutput; // true = í™œì„±
 
     public void SetInput(bool on)
     {
@@ -28,13 +28,13 @@ public class LaserSwitchDevice : MonoBehaviour
                         _latched = true;
                         OnOutput?.Invoke(true);
                     }
-                    // offÀÏ ¶§´Â À¯Áö(Latch). ÇÊ¿ä ½Ã ÇØÁ¦ ·ÎÁ÷ º°µµ Æ®¸®°Å Ãß°¡.
+                    // offì¼ ë•ŒëŠ” ìœ ì§€(Latch). í•„ìš” ì‹œ í•´ì œ ë¡œì§ ë³„ë„ íŠ¸ë¦¬ê±° ì¶”ê°€.
                     break;
                 }
         }
     }
 
-    // ÇÊ¿ä ½Ã º°µµ ÀÎÅÍ·¢¼ÇÀ¸·Î ·¡Ä¡ ÇØÁ¦
+    // í•„ìš” ì‹œ ë³„ë„ ì¸í„°ë™ì…˜ìœ¼ë¡œ ë˜ì¹˜ í•´ì œ
     public void ResetLatch()
     {
         _latched = false;

@@ -1,15 +1,15 @@
 ///
-/// Collider2D¿¡´Â Mirror ·¹ÀÌ¾î(_mirrorMask)¸¦ ÇÒ´ç.
+/// Collider2Dì—ëŠ” Mirror ë ˆì´ì–´(_mirrorMask)ë¥¼ í• ë‹¹.
 ///
 
 using UnityEngine;
 
 public enum E_MirrorShapeType
 {
-    Slash,      // '/' ¸ğ¾ç
-    BackSlash,  // '\' ¸ğ¾ç
-    Vertical,   // '£ü' ¸ğ¾ç
-    Horizontal, // '¡ª' ¸ğ¾ç
+    Slash,      // '/' ëª¨ì–‘
+    BackSlash,  // '\' ëª¨ì–‘
+    Vertical,   // 'ï½œ' ëª¨ì–‘
+    Horizontal, // 'â€•' ëª¨ì–‘
 }
 
 public class Mirror : MonoBehaviour
@@ -18,12 +18,12 @@ public class Mirror : MonoBehaviour
     [SerializeField] private E_MirrorShapeType _shapeType = E_MirrorShapeType.Slash;
     public E_MirrorShapeType ShapeType => _shapeType;
 
-    #region ·¹ÀÌÀú ¹İ»ç
+    #region ë ˆì´ì € ë°˜ì‚¬
 
-    // 4¹æÇâ (Right, Left, Up, Down) ±âÁØ ¹İ»ç
+    // 4ë°©í–¥ (Right, Left, Up, Down) ê¸°ì¤€ ë°˜ì‚¬
     public Vector2Int Reflect(Vector2Int inDir)
     {
-        // Á¤±ÔÈ­: -1,0,1 Áß ÇÏ³ª
+        // ì •ê·œí™”: -1,0,1 ì¤‘ í•˜ë‚˜
         inDir = new Vector2Int(
             Mathf.Clamp(inDir.x, -1, 1),
             Mathf.Clamp(inDir.y, -1, 1)
@@ -34,7 +34,7 @@ public class Mirror : MonoBehaviour
             case E_MirrorShapeType.Slash:
             default:
                 {
-                    // '/' ¹İ»ç ±ÔÄ¢
+                    // '/' ë°˜ì‚¬ ê·œì¹™
                     // Right -> Up, Up -> Right, Left -> Down, Down -> Left
                     if (inDir == Vector2Int.right) return Vector2Int.up;
                     if (inDir == Vector2Int.up) return Vector2Int.right;
@@ -45,7 +45,7 @@ public class Mirror : MonoBehaviour
                 }
             case E_MirrorShapeType.BackSlash:
                 {
-                    // '\' ¹İ»ç ±ÔÄ¢
+                    // '\' ë°˜ì‚¬ ê·œì¹™
                     // Right -> Down, Down -> Right, Left -> Up, Up -> Left
                     if (inDir == Vector2Int.right) return Vector2Int.down;
                     if (inDir == Vector2Int.down) return Vector2Int.right;
@@ -56,8 +56,8 @@ public class Mirror : MonoBehaviour
                 }
             case E_MirrorShapeType.Vertical:
                 {
-                    // '£ü' ¹İ»ç ±ÔÄ¢
-                    // ÁÂ/¿ì ¡æ ¹İ´ë, »ó/ÇÏ ¡æ ±×´ë·Î
+                    // 'ï½œ' ë°˜ì‚¬ ê·œì¹™
+                    // ì¢Œ/ìš° â†’ ë°˜ëŒ€, ìƒ/í•˜ â†’ ê·¸ëŒ€ë¡œ
                     if (inDir == Vector2Int.right) return Vector2Int.left;
                     if (inDir == Vector2Int.left) return Vector2Int.right;
 
@@ -65,8 +65,8 @@ public class Mirror : MonoBehaviour
                 }
             case E_MirrorShapeType.Horizontal:
                 {
-                    // '¡ª' ¹İ»ç ±ÔÄ¢
-                    // »ó/ÇÏ ¡æ ¹İ´ë, ÁÂ/¿ì ¡æ ±×´ë·Î
+                    // 'â€•' ë°˜ì‚¬ ê·œì¹™
+                    // ìƒ/í•˜ â†’ ë°˜ëŒ€, ì¢Œ/ìš° â†’ ê·¸ëŒ€ë¡œ
                     if (inDir == Vector2Int.up) return Vector2Int.down;
                     if (inDir == Vector2Int.down) return Vector2Int.up;
 
@@ -74,13 +74,13 @@ public class Mirror : MonoBehaviour
                 }
         }
 
-        // ¿¹¿Ü: 4¹æÇâÀÌ ¾Æ´Ï¸é ¹æÇâ À¯Áö
+        // ì˜ˆì™¸: 4ë°©í–¥ì´ ì•„ë‹ˆë©´ ë°©í–¥ ìœ ì§€
         return inDir;
     }
 
     #endregion
 
-    #region 45¡Æ È¸Àü Slash(/) ¡æ Horizontal(¡ª) ¡æ BackSlash(\) ¡æ Vertical(£ü) ¡æ Slash(/) ¡¦
+    #region 45Â° íšŒì „ Slash(/) â†’ Horizontal(â€•) â†’ BackSlash(\) â†’ Vertical(ï½œ) â†’ Slash(/) â€¦
 
     public void Rotate45()
     {
@@ -108,12 +108,12 @@ public class Mirror : MonoBehaviour
                 }
         }
 
-        // ºñÁÖ¾óÀº ZÃà ±âÁØ 45µµ È¸ÀüÀ¸·Î Ã³¸® (ÇÊ¿äÇÏ¸é Á¶Á¤)
+        // ë¹„ì£¼ì–¼ì€ Zì¶• ê¸°ì¤€ 45ë„ íšŒì „ìœ¼ë¡œ ì²˜ë¦¬ (í•„ìš”í•˜ë©´ ì¡°ì •)
         var rot = transform.rotation.eulerAngles;
         rot.z -= 45f;
         transform.rotation = Quaternion.Euler(rot);
 
-        // ·¹ÀÌÀú Àç°è»ê ¿äÃ»
+        // ë ˆì´ì € ì¬ê³„ì‚° ìš”ì²­
         LaserWorldEvents.RaiseWorldChanged();
     }
 

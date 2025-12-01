@@ -1,7 +1,7 @@
 ///
-/// »óÈ£ÀÛ¿ëÀ» ¡°ÁÂÇ¥ º¯È¯¡±À¸·Î ¿¬°á
-/// ÇÃ·¹ÀÌ¾î´Â ÀÚÀ¯ ÀÌµ¿ÇÏÁö¸¸,
-/// »óÈ£ÀÛ¿ë/ÆÛÁñ ÆÇÁ¤Àº ÀüºÎ ¡®±×¸®µå ¼¿¡¯ ±âÁØÀ¸·Î Ã³¸®ÇÑ´Ù.
+/// ìƒí˜¸ì‘ìš©ì„ â€œì¢Œí‘œ ë³€í™˜â€ìœ¼ë¡œ ì—°ê²°
+/// í”Œë ˆì´ì–´ëŠ” ììœ  ì´ë™í•˜ì§€ë§Œ,
+/// ìƒí˜¸ì‘ìš©/í¼ì¦ íŒì •ì€ ì „ë¶€ â€˜ê·¸ë¦¬ë“œ ì…€â€™ ê¸°ì¤€ìœ¼ë¡œ ì²˜ë¦¬í•œë‹¤.
 ///
 
 using UnityEngine;
@@ -25,30 +25,30 @@ public class PlayerInteractor : MonoBehaviour
 
     private void Update()
     {
-        // ¿¹½Ã: E Å° = »óÈ£ÀÛ¿ë
+        // ì˜ˆì‹œ: E í‚¤ = ìƒí˜¸ì‘ìš©
         if (Input.GetKeyDown(KeyCode.E))
             Interact();
 
-        // ¿¹½Ã: R Å° = °Å¿ï È¸Àü
+        // ì˜ˆì‹œ: R í‚¤ = ê±°ìš¸ íšŒì „
         if (Input.GetKeyDown(KeyCode.R))
             RotateMirror();
     }
 
-    // ÇÃ·¹ÀÌ¾î ¾Õ ¼¿ Ã£±â
+    // í”Œë ˆì´ì–´ ì• ì…€ ì°¾ê¸°
     private Vector3Int GetFrontCell()
     {
         var worldPos = (Vector2)transform.position + _move.FacingDir.normalized * _interactRange;
         return GridUtil.WorldToCell(worldPos);
     }
 
-    // ¾Õ ¼¿ÀÇ GridObject °¡Á®¿Í¼­ Çª½Ã/ÇÈ¾÷/¹® ¿­±â
+    // ì• ì…€ì˜ GridObject ê°€ì ¸ì™€ì„œ í‘¸ì‹œ/í”½ì—…/ë¬¸ ì—´ê¸°
     private void Interact()
     {
         var cell = GetFrontCell();
         var occupancy = GridOccupancy.Instance;
         var obj = occupancy.GetOccupant(cell);
 
-        // 1) µé°í ÀÖ´Ù¸é ³»·Á³õ±â
+        // 1) ë“¤ê³  ìˆë‹¤ë©´ ë‚´ë ¤ë†“ê¸°
         if (_carriedMirror != null)
         {
             if (!occupancy.IsBlockedCell(cell) && _carriedMirror.TryDrop(cell))
@@ -66,7 +66,7 @@ public class PlayerInteractor : MonoBehaviour
 
         if (obj == null) return;
 
-        // 2) °Å¿ï µé±â
+        // 2) ê±°ìš¸ ë“¤ê¸°
         var carryable = obj.GetComponent<CarryableMirror>();
         if (carryable != null && !carryable.IsCarried)
         {
@@ -92,7 +92,7 @@ public class PlayerInteractor : MonoBehaviour
             return;
         }
 
-        // 3) ¹® ¿­±â
+        // 3) ë¬¸ ì—´ê¸°
         var door = obj.GetComponent<Door>();
         if (door != null && !door.IsOpen)
         {

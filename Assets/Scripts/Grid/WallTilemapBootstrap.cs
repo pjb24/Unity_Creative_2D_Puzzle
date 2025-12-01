@@ -1,7 +1,7 @@
 ///
-/// º® Tilemap ¿ÀºêÁ§Æ®¿¡ ºÎÂø.
+/// ë²½ Tilemap ì˜¤ë¸Œì íŠ¸ì— ë¶€ì°©.
 /// 
-/// TilemapCollider2D´Â Á¦°ÅÇÏ°Å³ª, Collider°¡ ºÙ¾î ÀÖ¾îµµ Player¿Í´Â Ãæµ¹ ¾È ÇÏ´Â ·¹ÀÌ¾î·Î µĞ´Ù.
+/// TilemapCollider2DëŠ” ì œê±°í•˜ê±°ë‚˜, Colliderê°€ ë¶™ì–´ ìˆì–´ë„ Playerì™€ëŠ” ì¶©ëŒ ì•ˆ í•˜ëŠ” ë ˆì´ì–´ë¡œ ë‘”ë‹¤.
 ///
 
 using UnityEngine;

@@ -1,7 +1,7 @@
 ///
-/// ÇÑ ÇÁ·¹ÀÓ ³» ¿©·¯ ¿ÀºêÁ§Æ®°¡ »óÅÂ¸¦ ¹Ù²ãµµ
-/// OnWorldChanged´Â ¿©·¯ ¹ø ºÒ¸± ¼ö ÀÖÁö¸¸, LaserManager´Â ±×Àú _isDirty = true¸¸ ¼¼¿ì°í
-/// Update ÇÑ ¹ø¿¡ ÀüÃ¼ ·¹ÀÌÀú¸¦ Àç°è»êÇØ¼­ ºÎ´ãÀ» ÁÙÀÏ ¼ö ÀÖ´Ù.
+/// í•œ í”„ë ˆìž„ ë‚´ ì—¬ëŸ¬ ì˜¤ë¸Œì íŠ¸ê°€ ìƒíƒœë¥¼ ë°”ê¿”ë„
+/// OnWorldChangedëŠ” ì—¬ëŸ¬ ë²ˆ ë¶ˆë¦´ ìˆ˜ ìžˆì§€ë§Œ, LaserManagerëŠ” ê·¸ì € _isDirty = trueë§Œ ì„¸ìš°ê³ 
+/// Update í•œ ë²ˆì— ì „ì²´ ë ˆì´ì €ë¥¼ ìž¬ê³„ì‚°í•´ì„œ ë¶€ë‹´ì„ ì¤„ì¼ ìˆ˜ ìžˆë‹¤.
 ///
 
 using System;

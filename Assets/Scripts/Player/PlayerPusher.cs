@@ -1,8 +1,8 @@
 ///
-/// ÇÃ·¹ÀÌ¾îÀÇ Push »óÈ£ÀÛ¿ë + Ãà Lock °ü¸®
-/// - Interact Å°·Î PushableMirror ºÙÀÌ±â / ¶¼±â.
-/// - ºÙÀº µ¿¾È¿¡´Â axis ¹æÇâÀ¸·Î¸¸ ÀÌµ¿ °¡´É.
-/// - ÀÌµ¿ Àü¿¡ °Å¿ïÀÌ °°ÀÌ ÀÌµ¿ °¡´ÉÇÑÁö Ã¼Å©.
+/// í”Œë ˆì´ì–´ì˜ Push ìƒí˜¸ì‘ìš© + ì¶• Lock ê´€ë¦¬
+/// - Interact í‚¤ë¡œ PushableMirror ë¶™ì´ê¸° / ë–¼ê¸°.
+/// - ë¶™ì€ ë™ì•ˆì—ëŠ” axis ë°©í–¥ìœ¼ë¡œë§Œ ì´ë™ ê°€ëŠ¥.
+/// - ì´ë™ ì „ì— ê±°ìš¸ì´ ê°™ì´ ì´ë™ ê°€ëŠ¥í•œì§€ ì²´í¬.
 ///
 
 using UnityEngine;
@@ -15,10 +15,10 @@ public class PlayerPusher : MonoBehaviour
     private PlayerFreeMove _move;
 
     private PushableMirror _attachedMirror;
-    private Vector2Int _facingDir = Vector2Int.right; // ÀÌµ¿/Á¶ÀÛ ÄÚµå¿¡¼­ °è¼Ó °»½ÅÇØÁà¾ß ÇÔ.
+    private Vector2Int _facingDir = Vector2Int.right; // ì´ë™/ì¡°ì‘ ì½”ë“œì—ì„œ ê³„ì† ê°±ì‹ í•´ì¤˜ì•¼ í•¨.
 
     /// <summary>
-    /// ÇöÀç push »óÅÂÀÎÁö ¿©ºÎ
+    /// í˜„ì¬ push ìƒíƒœì¸ì§€ ì—¬ë¶€
     /// </summary>
     public bool IsPushing => _attachedMirror != null;
 
@@ -27,7 +27,7 @@ public class PlayerPusher : MonoBehaviour
         _move = GetComponent<PlayerFreeMove>();
     }
 
-    // ÇÃ·¹ÀÌ¾î ¾Õ ¼¿ Ã£±â
+    // í”Œë ˆì´ì–´ ì• ì…€ ì°¾ê¸°
     private Vector3Int GetFrontCell()
     {
         var worldPos = (Vector2)transform.position + _move.FacingDir.normalized * _interactRange;
@@ -35,8 +35,8 @@ public class PlayerPusher : MonoBehaviour
     }
 
     /// <summary>
-    /// ¿ÜºÎ¿¡¼­ ÇÃ·¹ÀÌ¾î°¡ ¹Ù¶óº¸´Â ¹æÇâÀ» °»½ÅÇØÁà¾ß ÇÑ´Ù.
-    /// ex) ÀÌµ¿ ÀÔ·ÂÀÌ (1,0) µé¾î¿À¸é SetFacingDir(Vector2Int.right)
+    /// ì™¸ë¶€ì—ì„œ í”Œë ˆì´ì–´ê°€ ë°”ë¼ë³´ëŠ” ë°©í–¥ì„ ê°±ì‹ í•´ì¤˜ì•¼ í•œë‹¤.
+    /// ex) ì´ë™ ì…ë ¥ì´ (1,0) ë“¤ì–´ì˜¤ë©´ SetFacingDir(Vector2Int.right)
     /// </summary>
     public void SetFacingDir(Vector2Int dir)
     {
@@ -45,13 +45,13 @@ public class PlayerPusher : MonoBehaviour
     }
 
     /// <summary>
-    /// Interact ÀÔ·Â Ã³¸® (¿¹: EÅ°)
-    /// - ÀÌ¹Ì °Å¿ïÀ» ¹Ğ°í ÀÖÀ¸¸é ÇØÁ¦.
-    /// - ¾Æ´Ï¸é ¾Õ Å¸ÀÏ¿¡¼­ PushableMirror Ã£°í BeginPush ½Ãµµ.
+    /// Interact ì…ë ¥ ì²˜ë¦¬ (ì˜ˆ: Eí‚¤)
+    /// - ì´ë¯¸ ê±°ìš¸ì„ ë°€ê³  ìˆìœ¼ë©´ í•´ì œ.
+    /// - ì•„ë‹ˆë©´ ì• íƒ€ì¼ì—ì„œ PushableMirror ì°¾ê³  BeginPush ì‹œë„.
     /// </summary>
     public void HandleInteract()
     {
-        // ÀÌ¹Ì ¹Ğ°í ÀÖ´Â »óÅÂ¶ó¸é ÇØÁ¦
+        // ì´ë¯¸ ë°€ê³  ìˆëŠ” ìƒíƒœë¼ë©´ í•´ì œ
         if (_attachedMirror != null)
         {
             _attachedMirror.EndPush();
@@ -76,60 +76,60 @@ public class PlayerPusher : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀÌµ¿ ÀÔ·ÂÀ» Ãà Lock ±ÔÄ¢¿¡ ¸Â°Ô ÇÊÅÍ¸µÇÏ°í,
-    /// °Å¿ïÀÌ °°ÀÌ ¿òÁ÷ÀÏ ¼ö ÀÖ´ÂÁö Ã¼Å©ÇÑ´Ù.
-    /// - rawDir: (1,0),(-1,0),(0,1),(0,-1) µî ¼¿ ´ÜÀ§ ÀÌµ¿ ¹æÇâ
-    /// - ¹İÈ¯°ª: ½ÇÁ¦·Î Àû¿ëÇÒ ÀÌµ¿ ¹æÇâ. (¸·È÷¸é Vector2Int.zero)
+    /// ì´ë™ ì…ë ¥ì„ ì¶• Lock ê·œì¹™ì— ë§ê²Œ í•„í„°ë§í•˜ê³ ,
+    /// ê±°ìš¸ì´ ê°™ì´ ì›€ì§ì¼ ìˆ˜ ìˆëŠ”ì§€ ì²´í¬í•œë‹¤.
+    /// - rawDir: (1,0),(-1,0),(0,1),(0,-1) ë“± ì…€ ë‹¨ìœ„ ì´ë™ ë°©í–¥
+    /// - ë°˜í™˜ê°’: ì‹¤ì œë¡œ ì ìš©í•  ì´ë™ ë°©í–¥. (ë§‰íˆë©´ Vector2Int.zero)
     /// </summary>
     public Vector2 FilterMoveAndTryPush(Vector2 rawDir)
     {
         if (rawDir == Vector2.zero)
             return Vector2.zero;
 
-        // Push »óÅÂ°¡ ¾Æ´Ï¶ó¸é ±×´ë·Î Åë°ú
+        // Push ìƒíƒœê°€ ì•„ë‹ˆë¼ë©´ ê·¸ëŒ€ë¡œ í†µê³¼
         if (_attachedMirror == null)
             return rawDir;
 
-        // Push ÁßÀÌ¸é "½ÃÀÛ ½ÃÁ¡ Ãà"À¸·Î¸¸ ÀÌµ¿ Çã¿ë
-        // => Mirror.BeginPush ¿¡¼­ ¼³Á¤µÈ axis »ç¿ë
+        // Push ì¤‘ì´ë©´ "ì‹œì‘ ì‹œì  ì¶•"ìœ¼ë¡œë§Œ ì´ë™ í—ˆìš©
+        // => Mirror.BeginPush ì—ì„œ ì„¤ì •ëœ axis ì‚¬ìš©
         var axis = _attachedMirror.GetAxis();
 
         Vector2 filtered = rawDir;
 
         if (axis.x != 0)
         {
-            // XÃà¸¸ Çã¿ë
+            // Xì¶•ë§Œ í—ˆìš©
             filtered.y = 0;
         }
         else if (axis.y != 0)
         {
-            // YÃà¸¸ Çã¿ë
+            // Yì¶•ë§Œ í—ˆìš©
             filtered.x = 0;
         }
 
         if (filtered == Vector2.zero)
         {
-            // ÀÔ·ÂÀÌ Ãà°ú ¾È ¸ÂÀ¸¸é ÀÌµ¿ ºÒ°¡
+            // ì…ë ¥ì´ ì¶•ê³¼ ì•ˆ ë§ìœ¼ë©´ ì´ë™ ë¶ˆê°€
             return Vector2.zero;
         }
 
-        // ÀÌÁ¦ filtered´Â (1,0) ¶Ç´Â (-1,0) ¶Ç´Â (0,1) or (0,-1) Áß ÇÏ³ª
-        // °Å¿ïÀÌ °°ÀÌ ¿òÁ÷ÀÏ ¼ö ÀÖ´ÂÁö Ã¼Å©
+        // ì´ì œ filteredëŠ” (1,0) ë˜ëŠ” (-1,0) ë˜ëŠ” (0,1) or (0,-1) ì¤‘ í•˜ë‚˜
+        // ê±°ìš¸ì´ ê°™ì´ ì›€ì§ì¼ ìˆ˜ ìˆëŠ”ì§€ ì²´í¬
         Vector3Int deltaCell = new Vector3Int((int)filtered.x, (int)filtered.y, 0);
 
         bool mirrorCanMove = _attachedMirror.CanMoveWithPusher(deltaCell);
         if (!mirrorCanMove)
         {
-            // °Å¿ïÀÌ ¸·È÷¸é ÇÃ·¹ÀÌ¾îµµ ÀÌµ¿ ºÒ°¡
+            // ê±°ìš¸ì´ ë§‰íˆë©´ í”Œë ˆì´ì–´ë„ ì´ë™ ë¶ˆê°€
             return Vector2.zero;
         }
 
-        // °Å¿ï ÀÌµ¿ OK ¡æ ÇÃ·¹ÀÌ¾îµµ ÀÌ ¹æÇâÀ¸·Î ÀÌµ¿
+        // ê±°ìš¸ ì´ë™ OK â†’ í”Œë ˆì´ì–´ë„ ì´ ë°©í–¥ìœ¼ë¡œ ì´ë™
         return filtered;
     }
 
     /// <summary>
-    /// ¿ÜºÎ¿¡¼­ °­Á¦·Î Çª½Ã ÇØÁ¦ÇÏ°í ½ÍÀ» ¶§(¿¹: Ãæµ¹, ÄÆ½Å µî)
+    /// ì™¸ë¶€ì—ì„œ ê°•ì œë¡œ í‘¸ì‹œ í•´ì œí•˜ê³  ì‹¶ì„ ë•Œ(ì˜ˆ: ì¶©ëŒ, ì»·ì‹  ë“±)
     /// </summary>
     public void ForceStopPush()
     {

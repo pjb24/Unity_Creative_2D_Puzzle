@@ -1,12 +1,12 @@
 ///
-/// Å¸ÀÔ: Basic / Locked / SpecialKey
-/// BasicÀº ½ÃÀÛºÎÅÍ open
-/// Locked / SpecialKey´Â ¿ÜºÎ¿¡¼­ TryOpen¡¦ È£ÃâÇØ¼­ ¿­±â
-/// ¿­·Á ÀÖÀ» ¶§ Player°¡ µé¾î¿À¸é ¡°¹® Åë°úµÊ¡± ·Î±×¸¸ Âï´Â ¼öÁØ
+/// íƒ€ì…: Basic / Locked / SpecialKey
+/// Basicì€ ì‹œì‘ë¶€í„° open
+/// Locked / SpecialKeyëŠ” ì™¸ë¶€ì—ì„œ TryOpenâ€¦ í˜¸ì¶œí•´ì„œ ì—´ê¸°
+/// ì—´ë ¤ ìˆì„ ë•Œ Playerê°€ ë“¤ì–´ì˜¤ë©´ â€œë¬¸ í†µê³¼ë¨â€ ë¡œê·¸ë§Œ ì°ëŠ” ìˆ˜ì¤€
 /// 
 /// 
-/// DoorÀÇ Room ÇÊµå ºñ¸é Reset()¿¡¼­ ÀÚµ¿À¸·Î ºÎ¸ğ Room ÇÒ´ç
-/// TargetRoom, TargetDoorId·Î ÀÌµ¿ ¸ñÀû ÁöÁ¤
+/// Doorì˜ Room í•„ë“œ ë¹„ë©´ Reset()ì—ì„œ ìë™ìœ¼ë¡œ ë¶€ëª¨ Room í• ë‹¹
+/// TargetRoom, TargetDoorIdë¡œ ì´ë™ ëª©ì  ì§€ì •
 ///
 
 using UnityEngine;
@@ -27,17 +27,17 @@ public class Door : MonoBehaviour
     public string DoorId => _doorId;
 
     [Header("Room Link")]
-    [SerializeField] private RoomController _room;          // ÀÌ Door°¡ ¼ÓÇÑ Room
+    [SerializeField] private RoomController _room;          // ì´ Doorê°€ ì†í•œ Room
     public RoomController Room => _room;
-    [SerializeField] private RoomController _targetRoom;    // ÀÌµ¿ÇÒ ´ë»ó Room
+    [SerializeField] private RoomController _targetRoom;    // ì´ë™í•  ëŒ€ìƒ Room
     public RoomController TargetRoom => _targetRoom;
-    [SerializeField] private string _targetDoorId;          // ´ë»ó Room ¾ÈÀÇ Door Id
+    [SerializeField] private string _targetDoorId;          // ëŒ€ìƒ Room ì•ˆì˜ Door Id
     public string TargetDoorId => _targetDoorId;
 
     public E_DoorType doorType = E_DoorType.Basic;
 
     [Header("Spawn Point")]
-    [SerializeField] private Vector2 _spawnOffset;          // ÇÃ·¹ÀÌ¾î ½ºÆù ¿ÀÇÁ¼Â
+    [SerializeField] private Vector2 _spawnOffset;          // í”Œë ˆì´ì–´ ìŠ¤í° ì˜¤í”„ì…‹
 
     public bool IsOpen { get; private set; }
 
@@ -57,7 +57,7 @@ public class Door : MonoBehaviour
 
     private void Reset()
     {
-        // ÀÚµ¿ Room ÇÒ´ç ½Ãµµ
+        // ìë™ Room í• ë‹¹ ì‹œë„
         if (_room == null)
         {
             _room = GetComponentInParent<RoomController>();
@@ -79,9 +79,9 @@ public class Door : MonoBehaviour
     {
         IsOpen = true;
 
-        // ½Ã°¢Àû Ç¥ÇöÀº ³ªÁß¿¡: »ö º¯°æ, ¾Ö´Ï¸ŞÀÌ¼Ç µî
+        // ì‹œê°ì  í‘œí˜„ì€ ë‚˜ì¤‘ì—: ìƒ‰ ë³€ê²½, ì• ë‹ˆë©”ì´ì…˜ ë“±
 
-        // Collider On/Off µî Ã³¸® ÈÄ
+        // Collider On/Off ë“± ì²˜ë¦¬ í›„
         LaserWorldEvents.RaiseWorldChanged();
 
         Debug.Log($"Door {name} opened.");
@@ -93,7 +93,7 @@ public class Door : MonoBehaviour
         Debug.Log($"Door {name} closed.");
     }
 
-    // ÀÏ¹İ Å°·Î ¿©´Â Àá±ä ¹®
+    // ì¼ë°˜ í‚¤ë¡œ ì—¬ëŠ” ì ê¸´ ë¬¸
     public bool TryOpenWithNormalKey(ref int normalKeyCount)
     {
         if (doorType != E_DoorType.Locked) return false;
@@ -105,7 +105,7 @@ public class Door : MonoBehaviour
         return true;
     }
 
-    // Æ¯¼ö Å° ¹®
+    // íŠ¹ìˆ˜ í‚¤ ë¬¸
     public bool TryOpenWithSpecialKey(bool hasSpecialKey)
     {
         if (doorType != E_DoorType.SpecialKey) return false;
@@ -123,10 +123,10 @@ public class Door : MonoBehaviour
         if (RoomManager.Instance == null) return;
         if (_targetRoom == null) return;
 
-        // ¿©±â¼­ RoomManager µî¿¡ ¹® Åë°ú ÀÌº¥Æ®¸¦ ³Ñ±â¸é µÈ´Ù.
+        // ì—¬ê¸°ì„œ RoomManager ë“±ì— ë¬¸ í†µê³¼ ì´ë²¤íŠ¸ë¥¼ ë„˜ê¸°ë©´ ëœë‹¤.
         Debug.Log($"Player entered door {name} (type: {doorType}).");
 
-        // ´ë»ó Room ¾ÈÀÇ Door Ã£±â
+        // ëŒ€ìƒ Room ì•ˆì˜ Door ì°¾ê¸°
         Door toDoor = _targetRoom.FindDoor(_targetDoorId);
         RoomManager.Instance.ChangeRoom(_targetRoom, this, toDoor);
     }

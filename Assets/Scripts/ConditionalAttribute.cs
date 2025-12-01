@@ -1,7 +1,7 @@
 ///
-/// ¾îÆ®¸®ºäÆ® Á¤ÀÇ
-/// Any/All Áö¿ø
-/// ShowIf/HideIf Áö¿ø
+/// ì–´íŠ¸ë¦¬ë·°íŠ¸ ì •ì˜
+/// Any/All ì§€ì›
+/// ShowIf/HideIf ì§€ì›
 ///
 
 using System;
@@ -12,11 +12,11 @@ public enum CondMode { Any, All }
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
 public class ConditionalAttribute : PropertyAttribute
 {
-    public readonly string SourcePath;  // Á¡ °æ·Î, ../ Áö¿ø, $·Î Àı´ë°æ·Î
-    public readonly object[] Values;    // ºñ±³ ´ë»ó °ªµé
+    public readonly string SourcePath;  // ì  ê²½ë¡œ, ../ ì§€ì›, $ë¡œ ì ˆëŒ€ê²½ë¡œ
+    public readonly object[] Values;    // ë¹„êµ ëŒ€ìƒ ê°’ë“¤
     public readonly CondMode Mode;      // Any = OR, All = AND
     public readonly bool Invert;        // HideIf = true
-    public readonly bool Flags;         // Enum Flags ºñ±³ ¸ğµå
+    public readonly bool Flags;         // Enum Flags ë¹„êµ ëª¨ë“œ
 
     public ConditionalAttribute(string sourcePath, CondMode mode, bool invert, bool flags, params object[] values)
     {
@@ -28,7 +28,7 @@ public class ConditionalAttribute : PropertyAttribute
     }
 }
 
-// º°Äª ¾îÆ®¸®ºäÆ®
+// ë³„ì¹­ ì–´íŠ¸ë¦¬ë·°íŠ¸
 public class ShowIfAnyAttribute : ConditionalAttribute
 { public ShowIfAnyAttribute(string src, params object[] any) : base(src, CondMode.Any, false, false, any) { } }
 
@@ -41,7 +41,7 @@ public class HideIfAnyAttribute : ConditionalAttribute
 public class HideIfAllAttribute : ConditionalAttribute
 { public HideIfAllAttribute(string src, params object[] all) : base(src, CondMode.All, true, false, all) { } }
 
-// Enum Flags Àü¿ë
+// Enum Flags ì „ìš©
 public class ShowIfFlagsAnyAttribute : ConditionalAttribute
 { public ShowIfFlagsAnyAttribute(string src, params object[] anyFlags) : base(src, CondMode.Any, false, true, anyFlags) { } }
 

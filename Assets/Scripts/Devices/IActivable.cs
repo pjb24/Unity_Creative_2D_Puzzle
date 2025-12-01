@@ -1,4 +1,4 @@
-// 1) Ή®/Ί®/ΉΩ΄ΪΏ΅ °ψΕλ ΐϋΏλΗÒ on/off ΐΞΕΝΖδΐΜ½Ί
+// 1) λ¬Έ/λ²½/λ°”λ‹¥μ— κ³µν†µ μ μ©ν•  on/off μΈν„°νμ΄μ¤
 public interface IActivable
 {
     void SetActiveState(bool on);

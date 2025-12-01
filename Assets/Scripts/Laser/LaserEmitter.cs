@@ -1,6 +1,6 @@
 ///
-/// ÇÑ emitter´ç LineRenderer ÇÏ³ª.
-/// LaserManager°¡ LineRenderer¿¡ Á¡µéÀ» ³Ö¾î¼­ °æ·Î¸¦ ±×¸°´Ù.
+/// í•œ emitterë‹¹ LineRenderer í•˜ë‚˜.
+/// LaserManagerê°€ LineRendererì— ì ë“¤ì„ ë„£ì–´ì„œ ê²½ë¡œë¥¼ ê·¸ë¦°ë‹¤.
 ///
 
 using UnityEngine;
@@ -8,7 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class LaserEmitter : MonoBehaviour
 {
-    [SerializeField] private Vector2Int _direction = Vector2Int.right; // ½ÃÀÛ ¹æÇâ (µ¿,¼­,³²,ºÏ Áß ÇÏ³ª)
+    [SerializeField] private Vector2Int _direction = Vector2Int.right; // ì‹œìž‘ ë°©í–¥ (ë™,ì„œ,ë‚¨,ë¶ ì¤‘ í•˜ë‚˜)
     private LineRenderer _line;
 
     public Vector2Int Direction => _direction;

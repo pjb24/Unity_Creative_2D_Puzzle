@@ -1,23 +1,23 @@
 ///
-/// º®Àº TilemapCollider2D / BoxCollider2D + Layer CollisionÀ¸·Î ¸·´Â´Ù.
-/// ÀÌÁ¦ ´õ ÀÌ»ó GridOccupancy·Î ÇÃ·¹ÀÌ¾î ÀÌµ¿À» °Ë»çÇÏÁö ¾Ê´Â´Ù.
+/// ë²½ì€ TilemapCollider2D / BoxCollider2D + Layer Collisionìœ¼ë¡œ ë§‰ëŠ”ë‹¤.
+/// ì´ì œ ë” ì´ìƒ GridOccupancyë¡œ í”Œë ˆì´ì–´ ì´ë™ì„ ê²€ì‚¬í•˜ì§€ ì•ŠëŠ”ë‹¤.
 /// 
 /// 
-/// Çª½Ã(¹Ð±â)´Â Ãæµ¹ ±â¹Ý + GridOccupancy È¥ÇÕ
-/// ÇÃ·¹ÀÌ¾î ÄÝ¶óÀÌ´õ°¡ PushableMirror ÄÝ¶óÀÌ´õ¿Í ´êÀº »óÅÂ¿¡¼­,
-/// ÀÌµ¿ ÀÔ·Â ¹æÇâ ±âÁØÀ¸·Î ¡°¹Ì´Â ¹æÇâ ¼¿¡± °è»ê ¡æ TryPush(dir) È£Ãâ
+/// í‘¸ì‹œ(ë°€ê¸°)ëŠ” ì¶©ëŒ ê¸°ë°˜ + GridOccupancy í˜¼í•©
+/// í”Œë ˆì´ì–´ ì½œë¼ì´ë”ê°€ PushableMirror ì½œë¼ì´ë”ì™€ ë‹¿ì€ ìƒíƒœì—ì„œ,
+/// ì´ë™ ìž…ë ¥ ë°©í–¥ ê¸°ì¤€ìœ¼ë¡œ â€œë¯¸ëŠ” ë°©í–¥ ì…€â€ ê³„ì‚° â†’ TryPush(dir) í˜¸ì¶œ
 /// 
-/// Ãæµ¹ ÁßÀÎ PushableMirror ¸ñ·ÏÀ» À¯ÁöÇÏ°í,
-/// ÀÔ·Â ¹æÇâÀÌ ±×ÂÊÀÏ ¶§¸¸ pushable.TryPush(gridDir) È£Ãâ
+/// ì¶©ëŒ ì¤‘ì¸ PushableMirror ëª©ë¡ì„ ìœ ì§€í•˜ê³ ,
+/// ìž…ë ¥ ë°©í–¥ì´ ê·¸ìª½ì¼ ë•Œë§Œ pushable.TryPush(gridDir) í˜¸ì¶œ
 /// 
 /// 
-/// MovingFloor / RotatingFloor¿ÍÀÇ Á¶È­
-/// MovingFloor / RotatingFloor´Â ¿©ÀüÈ÷ GridObject + kinematic Rigidbody2D
-/// ÆÛÁñ ·ÎÁ÷¿¡¼­ ¼¿ ´ÜÀ§·Î ÀÌµ¿/È¸Àü ÈÄ, transform.position/rotation ½º³À
-/// ÇÃ·¹ÀÌ¾î´Â ±×³É Rigidbody2D Ãæµ¹/OnCollisionStay·Î ¡°²ø·Á°¡´Â¡± ÆÐÅÏ »ç¿ë
+/// MovingFloor / RotatingFloorì™€ì˜ ì¡°í™”
+/// MovingFloor / RotatingFloorëŠ” ì—¬ì „ížˆ GridObject + kinematic Rigidbody2D
+/// í¼ì¦ ë¡œì§ì—ì„œ ì…€ ë‹¨ìœ„ë¡œ ì´ë™/íšŒì „ í›„, transform.position/rotation ìŠ¤ëƒ…
+/// í”Œë ˆì´ì–´ëŠ” ê·¸ëƒ¥ Rigidbody2D ì¶©ëŒ/OnCollisionStayë¡œ â€œëŒë ¤ê°€ëŠ”â€ íŒ¨í„´ ì‚¬ìš©
 /// 
-/// MovingFloor ÂÊ¿¡¼­ FixedUpdate¿¡ ÀÚ½ÅÀÇ delta¸¦ ±â¾ïÇØµÎ°í,
-/// ±× delta¸¦ ÇÃ·¹ÀÌ¾î Rigidbody2D¿¡ ´õÇØÁÖ´Â ÆÐÅÏµµ °¡´É
+/// MovingFloor ìª½ì—ì„œ FixedUpdateì— ìžì‹ ì˜ deltaë¥¼ ê¸°ì–µí•´ë‘ê³ ,
+/// ê·¸ deltaë¥¼ í”Œë ˆì´ì–´ Rigidbody2Dì— ë”í•´ì£¼ëŠ” íŒ¨í„´ë„ ê°€ëŠ¥
 ///
 
 using UnityEngine;
@@ -70,7 +70,7 @@ public class PlayerFreeMove : MonoBehaviour
         }
 
         var target = _rb.position + _filteredDir * moveSpeed * Time.fixedDeltaTime;
-        _rb.MovePosition(target); // ¹°¸® ±â¹Ý ¿¬¼Ó ÀÌµ¿
+        _rb.MovePosition(target); // ë¬¼ë¦¬ ê¸°ë°˜ ì—°ì† ì´ë™
     }
 
     public Vector2 FacingDir => _facingDir;

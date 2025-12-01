@@ -1,8 +1,8 @@
 ///
-/// GridUtil: Grid ·¡ÆÛ
+/// GridUtil: Grid ë˜í¼
 /// 
-/// ¾À ½ÃÀÛ ½Ã GridUtil.Init(grid); ÇÑ ¹ø È£Ãâ.
-/// ÀÌÈÄ ¸ğµç ¿ÀºêÁ§Æ®´Â World ÁÂÇ¥°¡ ¾Æ´Ï¶ó Cell(Vector3Int) ±âÁØÀ¸·Î Á¶ÀÛ.
+/// ì”¬ ì‹œì‘ ì‹œ GridUtil.Init(grid); í•œ ë²ˆ í˜¸ì¶œ.
+/// ì´í›„ ëª¨ë“  ì˜¤ë¸Œì íŠ¸ëŠ” World ì¢Œí‘œê°€ ì•„ë‹ˆë¼ Cell(Vector3Int) ê¸°ì¤€ìœ¼ë¡œ ì¡°ì‘.
 ///
 
 using UnityEngine;
@@ -25,11 +25,11 @@ public static class GridUtil
 
     public static Vector3 CellToWorldCenter(Vector3Int cellPos)
     {
-        // Å¸ÀÏ Áß¾Ó ½º³À
+        // íƒ€ì¼ ì¤‘ì•™ ìŠ¤ëƒ…
         return _grid.GetCellCenterWorld(cellPos);
     }
 
-    // ½º³À ÇÔ¼ö (ÇÙ½É)
+    // ìŠ¤ëƒ… í•¨ìˆ˜ (í•µì‹¬)
     public static void SnapTransformToGrid(Transform t)
     {
         if (_grid == null)

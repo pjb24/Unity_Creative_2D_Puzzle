@@ -4,7 +4,7 @@ using UnityEngine;
 public enum E_DoorType { Normal, Locked, SpecialKey }
 public enum E_DoorState { Closed, Opening, Open, Closing, Locked }
 
-public enum E_KeyType { Basic, SpecialA, SpecialB } // ÇÊ¿ä ½Ã È®Àå
+public enum E_KeyType { Basic, SpecialA, SpecialB } // í•„ìš” ì‹œ í™•ì¥
 
 [RequireComponent(typeof(BoxCollider2D))]
 [DisallowMultipleComponent]
@@ -12,12 +12,12 @@ public class DoorVisual : MonoBehaviour, IActivable
 {
     [SerializeField] private E_DoorType _type = E_DoorType.Normal;
     [SerializeField] private E_KeyType _requiredKey = E_KeyType.Basic;
-    [SerializeField] private float _openTime = 0.2f; // ¿¬Ãâ¿ë(¾ÆÆ® ¾øÀ¸¸é Collider Åä±Û¸¸)
+    [SerializeField] private float _openTime = 0.2f; // ì—°ì¶œìš©(ì•„íŠ¸ ì—†ìœ¼ë©´ Collider í† ê¸€ë§Œ)
 
     private BoxCollider2D _col;
     private SpriteRenderer _sr;
     private E_DoorState _state = E_DoorState.Closed;
-    private bool _latched;           // on »óÅÂ À¯Áö(ÀåÄ¡°¡ À¯ÁöÇüÀÏ ¶§)
+    private bool _latched;           // on ìƒíƒœ ìœ ì§€(ì¥ì¹˜ê°€ ìœ ì§€í˜•ì¼ ë•Œ)
 
     private void Awake()
     {
@@ -25,20 +25,20 @@ public class DoorVisual : MonoBehaviour, IActivable
         _sr = GetComponent<SpriteRenderer>();
         if (_sr == null)
         {
-            _sr = gameObject.AddComponent<SpriteRenderer>(); // placeholder »ö
+            _sr = gameObject.AddComponent<SpriteRenderer>(); // placeholder ìƒ‰
         }
 
         UpdateVisual();
     }
 
-    // ÀåÄ¡ Ãâ·Â ½ÅÈ£
+    // ì¥ì¹˜ ì¶œë ¥ ì‹ í˜¸
     public void SetActiveState(bool on)
     {
         _latched = on;
         TryApplyLatch();
     }
 
-    // ÇÃ·¹ÀÌ¾î »óÈ£ÀÛ¿ë µî
+    // í”Œë ˆì´ì–´ ìƒí˜¸ì‘ìš© ë“±
     public void TryOpenByPlayer()
     {
         if (_type == E_DoorType.Locked && _state == E_DoorState.Locked) return;
@@ -88,7 +88,7 @@ public class DoorVisual : MonoBehaviour, IActivable
     void Close()
     {
         if (_type == E_DoorType.SpecialKey && !PlayerInventory.Has(_requiredKey))
-            return; // Å°°¡ ¾øÀ¸¸é ¿­¸° »óÅÂ À¯Áö ¿É¼Ç
+            return; // í‚¤ê°€ ì—†ìœ¼ë©´ ì—´ë¦° ìƒíƒœ ìœ ì§€ ì˜µì…˜
 
         if (_state == E_DoorState.Closed) return;
 
@@ -117,8 +117,8 @@ public class DoorVisual : MonoBehaviour, IActivable
     {
         if (_sr == null) return;
 
-        // Placeholder »ö»ó ±ÔÄ¢
-        // Closed: »¡°­, Open: ÃÊ·Ï, Locked: ³ë¶û
+        // Placeholder ìƒ‰ìƒ ê·œì¹™
+        // Closed: ë¹¨ê°•, Open: ì´ˆë¡, Locked: ë…¸ë‘
         Color c = _state switch
         {
             E_DoorState.Open or E_DoorState.Opening => Color.green,

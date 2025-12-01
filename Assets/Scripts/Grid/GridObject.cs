@@ -1,8 +1,8 @@
 ///
-/// GridObject: ¸ğµç ÆÛÁñ ¿ÀºêÁ§Æ® °øÅë º£ÀÌ½º
+/// GridObject: ëª¨ë“  í¼ì¦ ì˜¤ë¸Œì íŠ¸ ê³µí†µ ë² ì´ìŠ¤
 /// 
-/// ¿¡µğÅÍ¿¡¼­ ¿ÀºêÁ§Æ®¸¦ ¾Æ¹« À§Ä¡¿¡ ´øÁ®³öµµ, OnEnable¿¡¼­ ÀÚµ¿À¸·Î °¡Àå °¡±î¿î Å¸ÀÏ¿¡ ½º³À + µî·Ï.
-/// ÀÌ°É ÇÃ·¹ÀÌ¾î, °Å¿ï, ¹®, º®, ÀåÄ¡ Prefab ÀüºÎ¿¡ ºÙÀÓ.
+/// ì—ë””í„°ì—ì„œ ì˜¤ë¸Œì íŠ¸ë¥¼ ì•„ë¬´ ìœ„ì¹˜ì— ë˜ì ¸ë†”ë„, OnEnableì—ì„œ ìë™ìœ¼ë¡œ ê°€ì¥ ê°€ê¹Œìš´ íƒ€ì¼ì— ìŠ¤ëƒ… + ë“±ë¡.
+/// ì´ê±¸ í”Œë ˆì´ì–´, ê±°ìš¸, ë¬¸, ë²½, ì¥ì¹˜ Prefab ì „ë¶€ì— ë¶™ì„.
 ///
 
 using UnityEngine;
@@ -13,11 +13,11 @@ public class GridObject : MonoBehaviour
     [SerializeField] private bool _snapEveryFrameInEditor = true;
 
     public Vector3Int CurrentCell { get; set; }
-    public bool BlocksMovement = true; // ÇÊ¿äÇÏ¸é ºñÃæµ¹ ¿ÀºêÁ§Æ®µµ ¸¸µé±â
+    public bool BlocksMovement = true; // í•„ìš”í•˜ë©´ ë¹„ì¶©ëŒ ì˜¤ë¸Œì íŠ¸ë„ ë§Œë“¤ê¸°
 
     private void OnEnable()
     {
-        // ¾À¿¡ Ã³À½ ¹èÄ¡µÈ À§Ä¡ ±âÁØÀ¸·Î µî·Ï
+        // ì”¬ì— ì²˜ìŒ ë°°ì¹˜ëœ ìœ„ì¹˜ ê¸°ì¤€ìœ¼ë¡œ ë“±ë¡
         var cell = GridUtil.WorldToCell(transform.position);
         GridOccupancy.Instance.TryRegister(this, cell);
     }
@@ -28,7 +28,7 @@ public class GridObject : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    // ¾À¿¡¼­ ¼ÕÀ¸·Î ¿òÁ÷ÀÏ ¶§ ÀÚµ¿À¸·Î ½º³ÀÇÏ°í ½ÍÀ¸¸é
+    // ì”¬ì—ì„œ ì†ìœ¼ë¡œ ì›€ì§ì¼ ë•Œ ìë™ìœ¼ë¡œ ìŠ¤ëƒ…í•˜ê³  ì‹¶ìœ¼ë©´
     private void OnValidate()
     {
         if (!Application.isPlaying && _snapEveryFrameInEditor)

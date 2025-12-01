@@ -1,7 +1,7 @@
 ///
-/// Áı±â / ³»¸®±â¸¸ Ã³¸®
-/// ÁıÀ¸¸é Occupancy¿¡¼­ Á¦°Å + player ÀÚ½ÄÀ¸·Î ºÙÀÌ±â
-/// ³»¸± ¶§´Â ¼¿ Ã¼Å© ÈÄ ´Ù½Ã µî·Ï
+/// ì§‘ê¸° / ë‚´ë¦¬ê¸°ë§Œ ì²˜ë¦¬
+/// ì§‘ìœ¼ë©´ Occupancyì—ì„œ ì œê±° + player ìì‹ìœ¼ë¡œ ë¶™ì´ê¸°
+/// ë‚´ë¦´ ë•ŒëŠ” ì…€ ì²´í¬ í›„ ë‹¤ì‹œ ë“±ë¡
 ///
 
 using UnityEngine;
@@ -13,7 +13,7 @@ public class CarryableMirror : MonoBehaviour
     private bool _isCarried;
     public bool IsCarried => _isCarried;
     
-    private Transform _carrier; // º¸Åë Player transform
+    private Transform _carrier; // ë³´í†µ Player transform
     private Rigidbody2D _rb;
 
     private Collider2D _collider;
@@ -23,7 +23,7 @@ public class CarryableMirror : MonoBehaviour
         _gridObj = GetComponent<GridObject>();
 
         _rb = GetComponent<Rigidbody2D>();
-        _rb.bodyType = RigidbodyType2D.Kinematic;            // Á÷Á¢ À§Ä¡ Á¦¾î
+        _rb.bodyType = RigidbodyType2D.Kinematic;            // ì§ì ‘ ìœ„ì¹˜ ì œì–´
         _rb.gravityScale = 0f;
 
         _collider = GetComponent<Collider2D>();
@@ -33,14 +33,14 @@ public class CarryableMirror : MonoBehaviour
     {
         if (_isCarried) return;
 
-        // ±×¸®µå Á¡À¯ ÇØÁ¦
+        // ê·¸ë¦¬ë“œ ì ìœ  í•´ì œ
         GridOccupancy.Instance.Unregister(_gridObj.CurrentCell);
 
         _collider.enabled = false;
 
         _carrier = carrier;
         transform.SetParent(_carrier);
-        // À§Ä¡´Â carrier ±âÁØÀ¸·Î Àû´çÈ÷ offset
+        // ìœ„ì¹˜ëŠ” carrier ê¸°ì¤€ìœ¼ë¡œ ì ë‹¹íˆ offset
         transform.localPosition = Vector3.up * 0.5f;
 
         _isCarried = true;
