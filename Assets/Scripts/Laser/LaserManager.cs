@@ -66,7 +66,7 @@ public class LaserManager : MonoBehaviour
     private void OnDisable()
     {
         //LaserWorldEvents.OnWorldChanged -= MarkDirty;
-        LaserWorldEvents.OnWorldChanged += StartMarkDirtyCoroutine;
+        LaserWorldEvents.OnWorldChanged -= StartMarkDirtyCoroutine;
     }
 
     private void Update()
