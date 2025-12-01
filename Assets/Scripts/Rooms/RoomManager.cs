@@ -1,8 +1,8 @@
 ///
-/// ½Ì±ÛÅæ + ·ë ÀüÈ¯ + Ä«¸Ş¶ó ÀÌµ¿
+/// ì‹±ê¸€í†¤ + ë£¸ ì „í™˜ + ì¹´ë©”ë¼ ì´ë™
 /// 
-/// CinemachineCamera´Â
-/// Follow/LookAt ºñ¿öµÎ°í, À§ ½ºÅ©¸³Æ®°¡ vcam À§Ä¡¸¦ Á÷Á¢ ÀÌµ¿
+/// CinemachineCameraëŠ”
+/// Follow/LookAt ë¹„ì›Œë‘ê³ , ìœ„ ìŠ¤í¬ë¦½íŠ¸ê°€ vcam ìœ„ì¹˜ë¥¼ ì§ì ‘ ì´ë™
 ///
 
 using System.Collections;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 
-[DefaultExecutionOrder(-5)]
+[DefaultExecutionOrder(-40)]
 public class RoomManager : MonoBehaviour
 {
     public static RoomManager Instance { get; private set; }
@@ -37,7 +37,7 @@ public class RoomManager : MonoBehaviour
         }
 
         Instance = this;
-        // ÇÊ¿äÇÏ¸é DontDestroyOnLoad(this.gameObject);
+        // í•„ìš”í•˜ë©´ DontDestroyOnLoad(this.gameObject);
     }
 
     private void Start()
@@ -74,7 +74,7 @@ public class RoomManager : MonoBehaviour
 
     #region Room Change
 
-    // Door¿¡¼­ Á÷Á¢ È£ÃâÇÏ´Â API
+    // Doorì—ì„œ ì§ì ‘ í˜¸ì¶œí•˜ëŠ” API
     public void ChangeRoom(RoomController targetRoom, Door fromDoor, Door toDoor)
     {
         if (_isTransitioning) return;
@@ -87,21 +87,21 @@ public class RoomManager : MonoBehaviour
     {
         _isTransitioning = true;
 
-        // TODO: ÀÔ·Â Lock (Input Blocker ¿¬µ¿)
+        // TODO: ì…ë ¥ Lock (Input Blocker ì—°ë™)
         // InputBlocker.SetBlocked(true);
 
-        // ÇÃ·¹ÀÌ¾î À§Ä¡ °áÁ¤
+        // í”Œë ˆì´ì–´ ìœ„ì¹˜ ê²°ì •
         if (_player != null && toDoor != null)
         {
             _player.position = toDoor.GetSpawnPosition();
         }
 
-        // Ä«¸Ş¶ó ÀÌµ¿
+        // ì¹´ë©”ë¼ ì´ë™
         if (_vcam != null)
         {
             Vector3 start = _vcam.transform.position;
             Vector3 target = targetRoom.GetCameraCenterWorld();
-            target.z = start.z; // Ä«¸Ş¶ó Z À¯Áö
+            target.z = start.z; // ì¹´ë©”ë¼ Z ìœ ì§€
 
             float t = 0f;
             while (t < 1f)
@@ -116,10 +116,10 @@ public class RoomManager : MonoBehaviour
 
         _currentRoom = targetRoom;
 
-        // TODO: ·ë È°¼º/ºñÈ°¼º Ã³¸® ÇÊ¿äÇÏ¸é ¿©±â¿¡¼­
+        // TODO: ë£¸ í™œì„±/ë¹„í™œì„± ì²˜ë¦¬ í•„ìš”í•˜ë©´ ì—¬ê¸°ì—ì„œ
         // ex) EnableCurrentRoomOnly();
 
-        // TODO: ÀÔ·Â Unlock
+        // TODO: ì…ë ¥ Unlock
         // InputBlocker.SetBlocked(false);
 
         _isTransitioning = false;
@@ -137,7 +137,7 @@ public class RoomManager : MonoBehaviour
             _vcam.transform.position = target;
         }
 
-        // TODO: ÃÊ±â ÇÃ·¹ÀÌ¾î ½ºÆù À§Ä¡°¡ ÇÊ¿äÇÏ¸é ¿©±â¼­ Ã³¸®
+        // TODO: ì´ˆê¸° í”Œë ˆì´ì–´ ìŠ¤í° ìœ„ì¹˜ê°€ í•„ìš”í•˜ë©´ ì—¬ê¸°ì„œ ì²˜ë¦¬
     }
 
     #endregion

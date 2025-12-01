@@ -1,33 +1,33 @@
 ///
-/// GridOccupancy´Â ¾À¿¡ 1°³¸¸ Á¸Àç (Singleton ¶Ç´Â Scene Manager¿¡ ºÙ¿©µµ µÊ).
-/// ¸ğµç ¡°ÆÛÁñ ¿ÀºêÁ§Æ®¡±´Â ÀÌ ¸Å´ÏÀú¸¦ ÅëÇØ¼­¸¸ À§Ä¡ º¯°æÇÏµµ·Ï °­Á¦.
+/// GridOccupancyëŠ” ì”¬ì— 1ê°œë§Œ ì¡´ì¬ (Singleton ë˜ëŠ” Scene Managerì— ë¶™ì—¬ë„ ë¨).
+/// ëª¨ë“  â€œí¼ì¦ ì˜¤ë¸Œì íŠ¸â€ëŠ” ì´ ë§¤ë‹ˆì €ë¥¼ í†µí•´ì„œë§Œ ìœ„ì¹˜ ë³€ê²½í•˜ë„ë¡ ê°•ì œ.
 /// 
-/// ¸ğµç ÆÛÁñ ¿ÀºêÁ§Æ®´Â ¹«Á¶°Ç GridObject¸¦ °®´Â´Ù.
-/// ½ºÆù / OnEnable ½Ã¿¡ TryRegister·Î µé¾î°¡¸ç, ÀÌ¹Ì ÀÖÀ¸¸é ½ÇÆĞ ¡æ ¿¡µğÅÍ¿¡¼­ ¹èÄ¡ Ãæµ¹µµ ¹Ù·Î ¾Ë ¼ö ÀÖÀ½.
-/// ÀÌµ¿Àº Ç×»ó GridOccupancy.TryMove¸¦ ÅëÇØ¼­¸¸.
-/// µé±â/»èÁ¦/Á×À½ ½Ã¿¡´Â Unregister È£Ãâ.
-/// Tilemap Collider´Â Ãæµ¹ ¿Ü°û¿ë, Á¡À¯ ÆÇÁ¤°ú´Â ¿ÏÀüÈ÷ ºĞ¸®.
-/// ÀÌ·¸°Ô ÇÏ¸é:
-/// ¡°°°Àº Ä­¿¡ °Å¿ï+ÇÃ·¹ÀÌ¾î °°ÀÌ ÀÖ´Â »óÅÂ¡± °°Àº ¹ö±×°¡ ±¸Á¶ÀûÀ¸·Î ¾È ³ª¿È.
-/// ·¹ÀÌÀú °è»ê ÇÒ ¶§µµ ±×¸®µå ±âÁØÀ¸·Î ¡°ÀÌ Ä­¿¡ ¹¹ ÀÖÀ½?¡±À» ¹Ù·Î °¡Á®¿Í¼­ Ã³¸® °¡´É.
+/// ëª¨ë“  í¼ì¦ ì˜¤ë¸Œì íŠ¸ëŠ” ë¬´ì¡°ê±´ GridObjectë¥¼ ê°–ëŠ”ë‹¤.
+/// ìŠ¤í° / OnEnable ì‹œì— TryRegisterë¡œ ë“¤ì–´ê°€ë©°, ì´ë¯¸ ìˆìœ¼ë©´ ì‹¤íŒ¨ â†’ ì—ë””í„°ì—ì„œ ë°°ì¹˜ ì¶©ëŒë„ ë°”ë¡œ ì•Œ ìˆ˜ ìˆìŒ.
+/// ì´ë™ì€ í•­ìƒ GridOccupancy.TryMoveë¥¼ í†µí•´ì„œë§Œ.
+/// ë“¤ê¸°/ì‚­ì œ/ì£½ìŒ ì‹œì—ëŠ” Unregister í˜¸ì¶œ.
+/// Tilemap ColliderëŠ” ì¶©ëŒ ì™¸ê³½ìš©, ì ìœ  íŒì •ê³¼ëŠ” ì™„ì „íˆ ë¶„ë¦¬.
+/// ì´ë ‡ê²Œ í•˜ë©´:
+/// â€œê°™ì€ ì¹¸ì— ê±°ìš¸+í”Œë ˆì´ì–´ ê°™ì´ ìˆëŠ” ìƒíƒœâ€ ê°™ì€ ë²„ê·¸ê°€ êµ¬ì¡°ì ìœ¼ë¡œ ì•ˆ ë‚˜ì˜´.
+/// ë ˆì´ì € ê³„ì‚° í•  ë•Œë„ ê·¸ë¦¬ë“œ ê¸°ì¤€ìœ¼ë¡œ â€œì´ ì¹¸ì— ë­ ìˆìŒ?â€ì„ ë°”ë¡œ ê°€ì ¸ì™€ì„œ ì²˜ë¦¬ ê°€ëŠ¥.
 /// 
-/// ÀÌµ¿ ½Ã¿¡ Tilemap Collider¸¦ ÀüÇô ¹ÏÁö ¸»°í, ¹«Á¶°Ç GridOccupancyÀÇ ¼¿ Á¤º¸¸¦ ±âÁØÀ¸·Î Çã¿ë/Â÷´ÜÀ» °áÁ¤ÇÏ¶ó´Â °Í.
+/// ì´ë™ ì‹œì— Tilemap Colliderë¥¼ ì „í˜€ ë¯¿ì§€ ë§ê³ , ë¬´ì¡°ê±´ GridOccupancyì˜ ì…€ ì •ë³´ë¥¼ ê¸°ì¤€ìœ¼ë¡œ í—ˆìš©/ì°¨ë‹¨ì„ ê²°ì •í•˜ë¼ëŠ” ê²ƒ.
 ///
 
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-// ´Ù¸¥ MonoBehaviourº¸´Ù ¸ÕÀú ½ÇÇà
-[DefaultExecutionOrder(-20)]
+// ë‹¤ë¥¸ MonoBehaviourë³´ë‹¤ ë¨¼ì € ì‹¤í–‰
+[DefaultExecutionOrder(-40)]
 public class GridOccupancy : MonoBehaviour
 {
     public static GridOccupancy Instance { get; private set; }
 
-    // 1Å¸ÀÏ = 1¿ÀºêÁ§Æ®
+    // 1íƒ€ì¼ = 1ì˜¤ë¸Œì íŠ¸
     private Dictionary<Vector3Int, GridObject> _occupied = new Dictionary<Vector3Int, GridObject>();
 
-    // ¿Ü°ûº®/³»ºÎº® µî "µé¾î°¡¸é ¾È µÇ´Â ¼¿" ÀúÀå¿ë
+    // ì™¸ê³½ë²½/ë‚´ë¶€ë²½ ë“± "ë“¤ì–´ê°€ë©´ ì•ˆ ë˜ëŠ” ì…€" ì €ì¥ìš©
     private HashSet<Vector3Int> _blockedCells = new HashSet<Vector3Int>();
 
     private void Awake()
@@ -40,11 +40,11 @@ public class GridOccupancy : MonoBehaviour
 
         Instance = this;
 
-        // ¾À ÀÌµ¿ÇÒ ¶§ À¯ÁöÇÒ °Å¸é ÁÖ¼® ÇØÁ¦
+        // ì”¬ ì´ë™í•  ë•Œ ìœ ì§€í•  ê±°ë©´ ì£¼ì„ í•´ì œ
         // DontDestroyOnLoad(gameObject);
     }
 
-    // ¿Ü°û º® Å¸ÀÏ¸Ê¿¡¼­ ¸·Èù ¼¿ Á¤º¸ ÀĞ¾î¿À±â
+    // ì™¸ê³½ ë²½ íƒ€ì¼ë§µì—ì„œ ë§‰íŒ ì…€ ì •ë³´ ì½ì–´ì˜¤ê¸°
     public void InitWallsFromTilemap(Tilemap wallTilemap)
     {
         _blockedCells.Clear();
@@ -83,7 +83,7 @@ public class GridOccupancy : MonoBehaviour
 
     public bool IsBlockedCell(Vector3Int cell)
     {
-        // ¿Ü°û/³»ºÎ º® ¼¿ OR ÀÌ¹Ì ¿ÀºêÁ§Æ®°¡ ÀÖ´Â ¼¿
+        // ì™¸ê³½/ë‚´ë¶€ ë²½ ì…€ OR ì´ë¯¸ ì˜¤ë¸Œì íŠ¸ê°€ ìˆëŠ” ì…€
         return _blockedCells.Contains(cell) || _occupied.ContainsKey(cell);
     }
 
@@ -115,14 +115,14 @@ public class GridOccupancy : MonoBehaviour
 
     public bool TryMove(GridObject obj, Vector3Int targetCell)
     {
-        // ÀÌ¹Ì ´Ù¸¥ °´Ã¼°¡ ÀÖÀ¸¸é ÀÌµ¿ ºÒ°¡
+        // ì´ë¯¸ ë‹¤ë¥¸ ê°ì²´ê°€ ìˆìœ¼ë©´ ì´ë™ ë¶ˆê°€
         if (IsBlockedCell(targetCell))
             return false;
 
-        // ±âÁ¸ À§Ä¡ ÇØÁ¦
+        // ê¸°ì¡´ ìœ„ì¹˜ í•´ì œ
         _occupied.Remove(obj.CurrentCell);
 
-        // »õ À§Ä¡ µî·Ï
+        // ìƒˆ ìœ„ì¹˜ ë“±ë¡
         _occupied[targetCell] = obj;
         obj.CurrentCell = targetCell;
         obj.transform.position = GridUtil.CellToWorldCenter(targetCell);

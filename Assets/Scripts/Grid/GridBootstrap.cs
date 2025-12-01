@@ -1,11 +1,11 @@
 ///
-/// Grid°¡ ºÙ¾îÀÖ´Â ¿ÀºêÁ§Æ®(º¸Åë »óÀ§ Grid ¿ÀºêÁ§Æ®)¿¡ GridBootstrap ºÙ¿©¼­ ÇÑ ¹ø¸¸ ÃÊ±âÈ­.
-/// ÀÌÈÄ Àü¿ª¿¡¼­ GridUtil.WorldToCell() / CellToWorldCenter() È£Ãâ.
+/// Gridê°€ ë¶™ì–´ìˆëŠ” ì˜¤ë¸Œì íŠ¸(ë³´í†µ ìƒìœ„ Grid ì˜¤ë¸Œì íŠ¸)ì— GridBootstrap ë¶™ì—¬ì„œ í•œ ë²ˆë§Œ ì´ˆê¸°í™”.
+/// ì´í›„ ì „ì—­ì—ì„œ GridUtil.WorldToCell() / CellToWorldCenter() í˜¸ì¶œ.
 ///
 
 using UnityEngine;
 
-[DefaultExecutionOrder(-10)]
+[DefaultExecutionOrder(-30)]
 public class GridBootstrap : MonoBehaviour
 {
     private void Awake()
