@@ -3,40 +3,23 @@ using UnityEngine;
 public class FloorMoveActuator : MonoBehaviour, IActivable
 {
     [SerializeField] private MovingFloor _floor;
-    // true=È¦µåÇü(³õÀ¸¸é º¹±Í), false=·¡Ä¡Çü(À¯Áö)
-    [SerializeField] private bool _returnOnRelease = false;
-
-    private bool _latched; // ·¡Ä¡ À¯Áö »óÅÂ
 
     public void SetActiveState(bool on)
     {
-        if (_returnOnRelease)
+        // â€œìˆ˜ìš© ì¤‘ì—ë§Œâ€: on=ì´ë™, off=ì›ì  ë³µê·€
+        if (on)
         {
-            // ¡°¼ö¿ë Áß¿¡¸¸¡±: on=ÀÌµ¿, off=¿øÁ¡ º¹±Í
-            if (on)
-            {
-                _floor.TriggerMoveForward();
-            }
-            else
-            {
-                _floor.TriggerMoveBackward();
-            }
+            _floor.TriggerMoveForward();
         }
         else
         {
-            // ¡°¼ö¿ëÇßÀ» ¶§ ÀÌµ¿ ÈÄ °íÁ¤¡±: ÃÖÃÊ on¿¡¼­¸¸ ÀÌµ¿, off´Â ¹«½Ã
-            if (on && !_latched)
-            {
-                _latched = true;
-                _floor.TriggerMoveForward();
-            }
+            _floor.TriggerMoveBackward();
         }
     }
 
-    // ÇÊ¿ä ½Ã ¿ÜºÎ¿¡¼­ ¿øÁ¡À¸·Î ¸®¼Â
+    // í•„ìš” ì‹œ ì™¸ë¶€ì—ì„œ ì›ì ìœ¼ë¡œ ë¦¬ì…‹
     public void ResetLatch()
     {
-        _latched = false;
         _floor.TriggerMoveBackward();
     }
 }

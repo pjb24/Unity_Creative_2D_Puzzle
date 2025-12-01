@@ -3,38 +3,22 @@ using UnityEngine;
 public class FloorRotateActuator : MonoBehaviour, IActivable
 {
     [SerializeField] private RotatingFloor _floor;
-    [SerializeField] private bool _returnOnRelease = false;
-
-    private bool _latched;
 
     public void SetActiveState(bool on)
     {
-        if (_returnOnRelease)
+        // â€œìˆ˜ìš© ì¤‘ì—ë§Œâ€: on=íšŒì „, off=ì›ë˜ ê°ë„ë¡œ ë³µê·€
+        if (on)
         {
-            // ¡°¼ö¿ë Áß¿¡¸¸¡±: on=È¸Àü, off=¿ø·¡ °¢µµ·Î º¹±Í
-            if (on)
-            {
-                _floor.TriggerRotateStartToEnd();
-            }
-            else
-            {
-                _floor.TriggerRotateEndToStart();
-            }
+            _floor.TriggerRotateStartToEnd();
         }
         else
         {
-            // ¡°¼ö¿ëÇßÀ» ¶§ È¸Àü ÈÄ °íÁ¤¡±: ÃÖÃÊ on¿¡¼­¸¸ È¸Àü
-            if (on && !_latched)
-            {
-                _latched = true;
-                _floor.TriggerRotateStartToEnd();
-            }
+            _floor.TriggerRotateEndToStart();
         }
     }
 
     public void ResetLatch()
     {
-        _latched = false;
         _floor.TriggerRotateEndToStart();
     }
 }
