@@ -4,8 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class WallToggle : MonoBehaviour, IActivable
 {
-    [SerializeField] private bool _isOn = true;       // ON=∫Æ ø√∂Ûø»(∏∑¿Ω)
-    [SerializeField] private float _anim = 0.15f;     // ø¨√‚øÎ
+    [SerializeField] private bool _isOn = true;       // ON=Î≤Ω Ïò¨ÎùºÏò¥(ÎßâÏùå)
+    [SerializeField] private float _anim = 0.15f;     // Ïó∞Ï∂úÏö©
 
     private BoxCollider2D _col;
     private SpriteRenderer _sr;
@@ -24,7 +24,7 @@ public class WallToggle : MonoBehaviour, IActivable
 
     public void SetActiveState(bool on)
     {
-        _isOn = on;
+        _isOn = !on;
         StopAllCoroutines();
         StartCoroutine(_ApplyRoutine());
     }
@@ -38,6 +38,6 @@ public class WallToggle : MonoBehaviour, IActivable
     private void ApplyStateImmediate()
     {
         _col.enabled = _isOn;
-        _sr.color = _isOn ? new Color(0.2f, 0.2f, 0.2f) : new Color(0.2f, 0.2f, 0.2f, 0.25f);
+        _sr.color = _isOn ? new Color(0.2f, 0.2f, 0.2f, 1.0f) : new Color(0.2f, 0.2f, 0.2f, 0.25f);
     }
 }
