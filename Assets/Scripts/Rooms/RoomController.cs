@@ -19,13 +19,13 @@ public class RoomController : MonoBehaviour
     [SerializeField] private Vector2 _roomSize = new Vector2(18, 10); // 디버그용, 선택사항
 
     [Header("Doors")]
-    [SerializeField] private List<Door> _doors = new List<Door>();
+    [SerializeField] private List<DoorPortal> _doors = new List<DoorPortal>();
 
     private Vector3 _centerOfRoom;
     public Vector3 CenterOfRoom => _centerOfRoom;
 
     public string RoomId => _roomId;
-    public IReadOnlyList<Door> Doors => _doors;
+    public IReadOnlyList<DoorPortal> Doors => _doors;
 
     private void Awake()
     {
@@ -42,7 +42,7 @@ public class RoomController : MonoBehaviour
         return transform.position + (Vector3)_cameraCenterOffset;
     }
 
-    public Door FindDoor(string doorId)
+    public DoorPortal FindDoor(string doorId)
     {
         if (string.IsNullOrEmpty(doorId))
             return null;

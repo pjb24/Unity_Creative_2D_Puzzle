@@ -1,130 +1,62 @@
-using System.Collections;
+///
+/// Door (Parent)
+///  ├─ DoorPortal   [Trigger Collider, GridObject]
+///  └─ VisualRoot
+///      └─ DoorCore [Blocking Collider(Non-Trigger), SpriteRenderer(placeholder)]
+///      └─ DoorVisual [Animator 등 연출 전담]
+/// 
+/// DoorVisual: 아트/애니/사운드 전담. 로직은 DoorCore가 전부 담당.
+/// - 현 단계: placeholder 색은 DoorCore가 처리하므로 여기서는 Animator/FX 훅만.
+/// - 추후: 스킨 교체(프리팹 교체), Addressables 로딩, VFX/사운드 재생 등 연결.
+///
+
 using UnityEngine;
 
-public enum E_DoorType { Normal, Locked, SpecialKey }
-public enum E_DoorState { Closed, Opening, Open, Closing, Locked }
-
-public enum E_KeyType { Basic, SpecialA, SpecialB } // 필요 시 확장
-
-[RequireComponent(typeof(BoxCollider2D))]
 [DisallowMultipleComponent]
 public class DoorVisual : MonoBehaviour, IActivable
 {
-    [SerializeField] private E_DoorType _type = E_DoorType.Normal;
-    [SerializeField] private E_KeyType _requiredKey = E_KeyType.Basic;
-    [SerializeField] private float _openTime = 0.2f; // 연출용(아트 없으면 Collider 토글만)
+    [SerializeField] private DoorCore _core;
+    [Header("Optional Refs")]
+    [SerializeField] private Animator _anim; // 아티스트가 붙일 Animator
 
-    private BoxCollider2D _col;
-    private SpriteRenderer _sr;
-    private E_DoorState _state = E_DoorState.Closed;
-    private bool _latched;           // on 상태 유지(장치가 유지형일 때)
+    // 애니 파라미터명(필요시 인스펙터에서 변경)
+    [SerializeField] private string _paramState = "DoorState"; // int
+    [SerializeField] private string _paramOpenTrigger = "Open";
+    [SerializeField] private string _paramCloseTrigger = "Close";
+    [SerializeField] private string _paramLockedBool = "Locked";
 
-    private void Awake()
+    void Reset()
     {
-        _col = GetComponent<BoxCollider2D>();
-        _sr = GetComponent<SpriteRenderer>();
-        if (_sr == null)
-        {
-            _sr = gameObject.AddComponent<SpriteRenderer>(); // placeholder 색
-        }
-
-        UpdateVisual();
+        if (_core == null) _core = GetComponentInParent<DoorCore>();
+        if (_anim == null) _anim = GetComponentInChildren<Animator>();
     }
 
-    // 장치 출력 신호
+    void Awake()
+    {
+        if (_core == null) _core = GetComponentInParent<DoorCore>();
+        if (_core != null) _core.OnStateChanged.AddListener(OnCoreStateChanged);
+    }
+
+    void OnDestroy()
+    {
+        if (_core != null) _core.OnStateChanged.RemoveListener(OnCoreStateChanged);
+    }
+
+    void OnCoreStateChanged(E_DoorState state)
+    {
+        if (_anim == null) return;
+
+        _anim.SetInteger(_paramState, (int)state);
+        _anim.SetBool(_paramLockedBool, state == E_DoorState.Locked);
+
+        if (state == E_DoorState.Opening) _anim.SetTrigger(_paramOpenTrigger);
+        if (state == E_DoorState.Closing) _anim.SetTrigger(_paramCloseTrigger);
+        // Open/Closed 도착 상태에서 루핑 애니가 있으면 상태값으로 동작
+    }
+
+    // 장치 바인더 호환(아트 시스템 단에 연결돼 있어도 안전하게 코어로 위임)
     public void SetActiveState(bool on)
     {
-        _latched = on;
-        TryApplyLatch();
-    }
-
-    // 플레이어 상호작용 등
-    public void TryOpenByPlayer()
-    {
-        if (_type == E_DoorType.Locked && _state == E_DoorState.Locked) return;
-        if (_type == E_DoorType.SpecialKey && !PlayerInventory.Has(_requiredKey)) return;
-
-        Open();
-    }
-
-    public void Lock()
-    {
-        _state = E_DoorState.Locked; UpdateVisual();
-    }
-
-    public void Unlock()
-    {
-        if (_state == E_DoorState.Locked)
-        {
-            _state = E_DoorState.Closed; UpdateVisual();
-        }
-    }
-
-    void TryApplyLatch()
-    {
-        if (_state == E_DoorState.Locked)
-            return;
-
-        if (_latched)
-        {
-            Open();
-        }
-        else
-        {
-            Close();
-        }
-    }
-
-    void Open()
-    {
-        if (_state == E_DoorState.Open)
-            return;
-
-        _state = E_DoorState.Opening;
-        StopAllCoroutines();
-        StartCoroutine(_OpenRoutine());
-    }
-
-    void Close()
-    {
-        if (_type == E_DoorType.SpecialKey && !PlayerInventory.Has(_requiredKey))
-            return; // 키가 없으면 열린 상태 유지 옵션
-
-        if (_state == E_DoorState.Closed) return;
-
-        _state = E_DoorState.Closing;
-        StopAllCoroutines();
-        StartCoroutine(_CloseRoutine());
-    }
-
-    private IEnumerator _OpenRoutine()
-    {
-        yield return new WaitForSeconds(_openTime);
-        _col.enabled = false;
-        _state = E_DoorState.Open;
-        UpdateVisual();
-    }
-
-    private  IEnumerator _CloseRoutine()
-    {
-        yield return new WaitForSeconds(_openTime);
-        _col.enabled = true;
-        _state = E_DoorState.Closed;
-        UpdateVisual();
-    }
-
-    void UpdateVisual()
-    {
-        if (_sr == null) return;
-
-        // Placeholder 색상 규칙
-        // Closed: 빨강, Open: 초록, Locked: 노랑
-        Color c = _state switch
-        {
-            E_DoorState.Open or E_DoorState.Opening => Color.green,
-            E_DoorState.Locked => Color.yellow,
-            _ => Color.red
-        };
-        _sr.color = c;
+        if (_core != null) _core.SetActiveState(on);
     }
 }

@@ -75,7 +75,7 @@ public class RoomManager : MonoBehaviour
     #region Room Change
 
     // Door에서 직접 호출하는 API
-    public void ChangeRoom(RoomController targetRoom, Door fromDoor, Door toDoor)
+    public void ChangeRoom(RoomController targetRoom, DoorPortal fromDoor, DoorPortal toDoor)
     {
         if (_isTransitioning) return;
         if (targetRoom == null) return;
@@ -83,17 +83,21 @@ public class RoomManager : MonoBehaviour
         StartCoroutine(ChangeRoomRoutine(targetRoom, fromDoor, toDoor));
     }
 
-    private IEnumerator ChangeRoomRoutine(RoomController targetRoom, Door fromDoor, Door toDoor)
+    private IEnumerator ChangeRoomRoutine(RoomController targetRoom, DoorPortal fromDoor, DoorPortal toDoor)
     {
         _isTransitioning = true;
 
-        // TODO: 입력 Lock (Input Blocker 연동)
-        // InputBlocker.SetBlocked(true);
+        // 입력 Lock
+        //var player = _player.GetComponent<PlayerFreeMove>();
+        //if (player != null)
+        //{
+        //    player.SetExternalLock(true);
+        //}
 
         // 플레이어 위치 결정
         if (_player != null && toDoor != null)
         {
-            _player.position = toDoor.GetSpawnPosition();
+            _player.position += toDoor.GetSpawnPosition();
         }
 
         // 카메라 이동
@@ -119,8 +123,11 @@ public class RoomManager : MonoBehaviour
         // TODO: 룸 활성/비활성 처리 필요하면 여기에서
         // ex) EnableCurrentRoomOnly();
 
-        // TODO: 입력 Unlock
-        // InputBlocker.SetBlocked(false);
+        // 입력 Unlock
+        //if (player != null)
+        //{
+        //    player.SetExternalLock(false);
+        //}
 
         _isTransitioning = false;
     }

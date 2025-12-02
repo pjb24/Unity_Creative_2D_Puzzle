@@ -7,7 +7,6 @@
 
 using UnityEngine;
 
-[RequireComponent(typeof(SpriteRenderer))]
 public class GridObject : MonoBehaviour
 {
     [SerializeField] private bool _snapEveryFrameInEditor = true;

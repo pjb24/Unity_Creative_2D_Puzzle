@@ -93,7 +93,7 @@ public class PlayerInteractor : MonoBehaviour
         }
 
         // 3) 문 열기
-        var door = obj.GetComponent<Door>();
+        var door = obj.GetComponent<DoorCore>();
         if (door != null && !door.IsOpen)
         {
             TryOpenDoor(door);
@@ -102,18 +102,18 @@ public class PlayerInteractor : MonoBehaviour
         }
     }
 
-    private void TryOpenDoor(Door door)
+    private void TryOpenDoor(DoorCore door)
     {
-        switch (door.doorType)
+        switch (door.Type)
         {
-            case Door.E_DoorType.Basic:
+            case E_DoorType.Basic:
                 door.Open();
                 break;
-            case Door.E_DoorType.Locked:
-                door.TryOpenWithNormalKey(ref normalKeyCount);
+            case E_DoorType.Locked:
+                door.TryOpenByPlayer();
                 break;
-            case Door.E_DoorType.SpecialKey:
-                door.TryOpenWithSpecialKey(hasSpecialKey);
+            case E_DoorType.SpecialKey:
+                door.TryOpenByPlayer();
                 break;
         }
     }
