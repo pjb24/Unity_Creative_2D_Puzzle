@@ -5,7 +5,8 @@
 ///      └─ DoorCore [Blocking Collider(Non-Trigger), SpriteRenderer(placeholder)]
 ///      └─ DoorVisual [Animator 등 연출 전담]
 /// 
-/// 문 로직의 단일 진실원천(FSM, 차단 콜라이더, 월드 변경 이벤트)
+/// DoorCore: 문 로직의 단일 진실원천
+/// - FSM, 차단 콜라이더, 월드 변경 이벤트 트리거
 ///
 
 using System.Collections;
@@ -18,10 +19,17 @@ public class DoorCore : MonoBehaviour, IActivable
     [Header("Policy")]
     [SerializeField] private E_DoorType _type = E_DoorType.Basic;
     public E_DoorType Type => _type;
-    [SerializeField] private E_KeyType _requiredKey = E_KeyType.Basic;
+
+    [Tooltip("SpecialKey 타입일 때 필요한 키. 그 외 타입에서도 None/Basic 등으로 사용할 수 있음.")]
+    [SerializeField] private E_KeyType _requiredKey = E_KeyType.None;
+
+    [Tooltip("연출 지연(콜라이더 토글 시점). 아트가 붙으면 애니 타이밍과 동기화.")]
     [SerializeField] private float _openTime = 0.2f;  // 연출 지연(콜라이더 토글 시점)
+    
+    [Tooltip("Basic만 적용. 시작 시 즉시 Open 처리.")]
     [SerializeField] private bool _basicStartsOpen = true;
 
+    [Header("Blocking Collider (Non-Trigger)")]
     private Collider2D _blockCollider;  // '길막'용 콜라이더(Trigger=아님). 없으면 본체 Box 사용
 
     [Header("Debug/Placeholder")]
@@ -34,7 +42,6 @@ public class DoorCore : MonoBehaviour, IActivable
     public E_DoorState State { get; private set; } = E_DoorState.Closed;
     public bool IsOpen => State == E_DoorState.Open || State == E_DoorState.Opening;
 
-    private bool _latched;     // 장치 출력 유지 여부(래치)
     private Coroutine _transitionCo;
 
     void Reset()
@@ -65,16 +72,33 @@ public class DoorCore : MonoBehaviour, IActivable
         }
     }
 
-    // 외부 Device를 통한 제어(래치/홀드)를 위한 표준 입력
+    // 장치 출력(레이저 장치/레버 등)으로 제어
+    // DeviceOnly: on/off에 그대로 반응
+    // 기타 타입: 장치와 플레이어 모두 허용(디자인 정책에 따라 사용)
     public void SetActiveState(bool on)
     {
-        _latched = on;
-        TryApplyLatch();
+        if (_type == E_DoorType.DeviceOnly)
+        {
+            if (on)
+            {
+                Open();
+            }
+            else
+            {
+                Close();
+            }
+        }
     }
 
-    // 플레이어 상호작용 기반 오픈(키 정책 반영)
+    // 플레이어 상호작용(문 앞에서 E 등)
+    // DeviceOnly는 항상 false 반환
     public bool TryOpenByPlayer()
     {
+        if (_type == E_DoorType.DeviceOnly)
+        {
+            return false;   // 장치 전용
+        }
+
         if (_type == E_DoorType.Locked)
         {
             // 일반키 필요
@@ -82,12 +106,14 @@ public class DoorCore : MonoBehaviour, IActivable
             if (!PlayerInventory.ConsumeNormalKey()) return false;
             Open(); return true;
         }
+
         if (_type == E_DoorType.SpecialKey)
         {
             if (IsOpen) return true;
             if (!PlayerInventory.Has(_requiredKey)) return false;
             Open(); return true;
         }
+
         // Basic
         if (!IsOpen) Open();
         return true;
@@ -118,20 +144,6 @@ public class DoorCore : MonoBehaviour, IActivable
         }
     }
 
-    void TryApplyLatch()
-    {
-        if (State == E_DoorState.Locked) return;
-
-        if (_latched)
-        {
-            Open();
-        }
-        else
-        {
-            Close();
-        }
-    }
-
     public void Open()
     {
         if (IsOpen) return;
@@ -149,10 +161,6 @@ public class DoorCore : MonoBehaviour, IActivable
     {
         if (State == E_DoorState.Closed || State == E_DoorState.Locked) return;
 
-        if (_type == E_DoorType.SpecialKey && PlayerInventory.Has(_requiredKey))
-        {
-            // 정책에 따라 '특수키 보유 중엔 항상 열림'으로 운용하려면 여기서 return;
-        }
         if (_transitionCo != null) StopCoroutine(_transitionCo);
 
         State = E_DoorState.Closing;
@@ -174,7 +182,15 @@ public class DoorCore : MonoBehaviour, IActivable
 
     void CloseImmediate()
     {
-        State = E_DoorState.Closed;
+        if (_type == E_DoorType.Locked || _type == E_DoorType.SpecialKey)
+        {
+            State = E_DoorState.Locked;
+        }
+        else
+        {
+            State = E_DoorState.Closed;
+        }
+
         ApplyCollisionAndPlaceholder();
         RaiseWorldChanged();
         RaiseStateEvent();
@@ -209,6 +225,7 @@ public class DoorCore : MonoBehaviour, IActivable
     void ApplyCollisionAndPlaceholder()
     {
         if (_blockCollider) _blockCollider.enabled = !IsOpen; // 열리면 통과 가능
+
         if (_sr)
         {
             // 플레이스홀더 색: Open=초록, Locked=노랑, 나머지=빨강

@@ -93,28 +93,12 @@ public class PlayerInteractor : MonoBehaviour
         }
 
         // 3) 문 열기
-        var door = obj.GetComponent<DoorCore>();
+        var door = obj.GetComponentInChildren<DoorCore>();
         if (door != null && !door.IsOpen)
         {
-            TryOpenDoor(door);
+            door.TryOpenByPlayer();
 
             return;
-        }
-    }
-
-    private void TryOpenDoor(DoorCore door)
-    {
-        switch (door.Type)
-        {
-            case E_DoorType.Basic:
-                door.Open();
-                break;
-            case E_DoorType.Locked:
-                door.TryOpenByPlayer();
-                break;
-            case E_DoorType.SpecialKey:
-                door.TryOpenByPlayer();
-                break;
         }
     }
 
