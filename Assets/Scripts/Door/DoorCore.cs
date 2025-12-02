@@ -1,9 +1,8 @@
 ///
 /// Door (Parent)
-///  ├─ DoorPortal   [Trigger Collider, GridObject]
-///  └─ VisualRoot
-///      └─ DoorCore [Blocking Collider(Non-Trigger), SpriteRenderer(placeholder)]
-///      └─ DoorVisual [Animator 등 연출 전담]
+///  ├─ DoorCore [Blocking Collider(Non-Trigger), SpriteRenderer(placeholder)]
+///  └─ DoorPortal   [Trigger Collider, GridObject]
+///  └─ DoorVisual [Animator 등 연출 전담]
 /// 
 /// DoorCore: 문 로직의 단일 진실원천
 /// - FSM, 차단 콜라이더, 월드 변경 이벤트 트리거
@@ -14,7 +13,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(BoxCollider2D))]
-public class DoorCore : MonoBehaviour, IActivable
+public class DoorCore : MonoBehaviour, IActivable, IInteractable
 {
     [Header("Policy")]
     [SerializeField] private E_DoorType _type = E_DoorType.Basic;
@@ -247,5 +246,15 @@ public class DoorCore : MonoBehaviour, IActivable
     void RaiseStateEvent()
     {
         OnStateChanged?.Invoke(State);
+    }
+
+    public bool CanInteract(PlayerInteractor interactor)
+    {
+        return interactor != null && _type != E_DoorType.DeviceOnly;
+    }
+
+    public bool Interact(PlayerInteractor interactor)
+    {
+        return TryOpenByPlayer();
     }
 }

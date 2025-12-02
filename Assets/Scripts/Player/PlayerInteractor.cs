@@ -14,6 +14,7 @@ public class PlayerInteractor : MonoBehaviour
     private PlayerPusher _pusher;
 
     private CarryableMirror _carriedMirror;
+    public bool HasCarriedMirror => _carriedMirror != null;
     public int normalKeyCount;
     public bool hasSpecialKey;
 
@@ -57,6 +58,7 @@ public class PlayerInteractor : MonoBehaviour
             return;
         }
 
+        // 밀고 있다면 밀기 중지
         if (_pusher.IsPushing)
         {
             _pusher.HandleInteract();
@@ -65,40 +67,14 @@ public class PlayerInteractor : MonoBehaviour
         }
 
         if (obj == null) return;
-
-        // 2) 거울 들기
-        var carryable = obj.GetComponent<CarryableMirror>();
-        if (carryable != null && !carryable.IsCarried)
+        var interactable = obj.GetComponent<IInteractable>();
+        if (interactable == null)
         {
-            carryable.PickUp(transform);
-            _carriedMirror = carryable;
-
-            return;
+            interactable = obj.GetComponentInChildren<IInteractable>();
         }
-
-        var pushable = obj.GetComponent<PushableMirror>();
-        if (pushable != null)
+        if (interactable != null && interactable.CanInteract(this))
         {
-            _pusher.HandleInteract();
-
-            return;
-        }
-
-        var pathMirror = obj.GetComponent<PathMirror>();
-        if (pathMirror != null)
-        {
-            pathMirror.TryMoveNext();
-
-            return;
-        }
-
-        // 3) 문 열기
-        var door = obj.GetComponentInChildren<DoorCore>();
-        if (door != null && !door.IsOpen)
-        {
-            door.TryOpenByPlayer();
-
-            return;
+            interactable.Interact(this);
         }
     }
 
@@ -114,5 +90,19 @@ public class PlayerInteractor : MonoBehaviour
         if (mirror == null) return;
 
         mirror.Rotate45();
+    }
+
+    public bool TryPickUpMirror(CarryableMirror mirror)
+    {
+        if (_carriedMirror != null || mirror == null)
+            return false;
+
+        _carriedMirror = mirror;
+        return true;
+    }
+
+    public void TogglePush(PushableMirror mirror)
+    {
+        _pusher.HandleInteract(mirror);
     }
 }

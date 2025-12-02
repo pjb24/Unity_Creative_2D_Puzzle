@@ -12,7 +12,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(GridObject))]
 [RequireComponent(typeof(Rigidbody2D))]
-public class PushableMirror : MonoBehaviour
+public class PushableMirror : MonoBehaviour, IInteractable
 {
     private GridObject _gridObj;
     private Rigidbody2D _rb;
@@ -147,5 +147,19 @@ public class PushableMirror : MonoBehaviour
     public Vector2Int GetAxis()
     {
         return _axis;
+    }
+
+    public bool CanInteract(PlayerInteractor interactor)
+    {
+        return interactor != null;
+    }
+
+    public bool Interact(PlayerInteractor interactor)
+    {
+        if (interactor == null)
+            return false;
+
+        interactor.TogglePush(this);
+        return true;
     }
 }

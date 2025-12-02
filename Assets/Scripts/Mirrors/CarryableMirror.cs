@@ -7,7 +7,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(GridObject))]
-public class CarryableMirror : MonoBehaviour
+public class CarryableMirror : MonoBehaviour, IInteractable
 {
     private GridObject _gridObj;
     private bool _isCarried;
@@ -70,6 +70,23 @@ public class CarryableMirror : MonoBehaviour
         LaserWorldEvents.RaiseWorldChanged();
 
         Debug.Log($"CarryableMirror {name} dropped at {targetCell}.");
+        return true;
+    }
+
+    public bool CanInteract(PlayerInteractor interactor)
+    {
+        return !_isCarried && interactor != null && !interactor.HasCarriedMirror;
+    }
+
+    public bool Interact(PlayerInteractor interactor)
+    {
+        if (!CanInteract(interactor))
+            return false;
+
+        if (!interactor.TryPickUpMirror(this))
+            return false;
+
+        PickUp(interactor.transform);
         return true;
     }
 }

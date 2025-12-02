@@ -10,7 +10,7 @@ using System.Collections;
 
 [RequireComponent(typeof(GridObject))]
 [RequireComponent(typeof(Rigidbody2D))]
-public class PathMirror : MonoBehaviour
+public class PathMirror : MonoBehaviour, IInteractable
 {
     [Header("Path Settings")]
     [Tooltip("이 거울이 따라갈 그리드 셀 경로 (월드 Grid 기준 셀 좌표)")]
@@ -215,6 +215,16 @@ public class PathMirror : MonoBehaviour
                 Gizmos.DrawLine(world, nextWorld);
             }
         }
+    }
+
+    public bool CanInteract(PlayerInteractor interactor)
+    {
+        return !_isMoving;
+    }
+
+    public bool Interact(PlayerInteractor interactor)
+    {
+        return TryMoveNext();
     }
 #endif
 }

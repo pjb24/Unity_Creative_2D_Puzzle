@@ -143,10 +143,6 @@ PrefabInstance:
       propertyPath: _targetDoorId
       value: A_East
       objectReference: {fileID: 0}
-    - target: {fileID: 3267550753489264540, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
-      propertyPath: _spawnOffset.x
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6321202829830876943, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9.5
@@ -190,10 +186,6 @@ PrefabInstance:
     - target: {fileID: 7332131063697487093, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
       propertyPath: m_Name
       value: Door_B_West
-      objectReference: {fileID: 0}
-    - target: {fileID: 7736259875942562216, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
-      propertyPath: _snapEveryFrameInEditor
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2226,14 +2218,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 2076706668}
     m_Modifications:
     - target: {fileID: 2284304409215483521, guid: b7ca2d8d90e54e64d9da1e94fd311277, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2284304409215483521, guid: b7ca2d8d90e54e64d9da1e94fd311277, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2284304409215483521, guid: b7ca2d8d90e54e64d9da1e94fd311277, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.5
       objectReference: {fileID: 0}
@@ -2272,10 +2256,6 @@ PrefabInstance:
     - target: {fileID: 2284304409215483521, guid: b7ca2d8d90e54e64d9da1e94fd311277, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4957022230619918042, guid: b7ca2d8d90e54e64d9da1e94fd311277, type: 3}
-      propertyPath: _snapEveryFrameInEditor
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5753697389486976439, guid: b7ca2d8d90e54e64d9da1e94fd311277, type: 3}
       propertyPath: m_Name
@@ -4298,10 +4278,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mirror_Carryable
       objectReference: {fileID: 0}
-    - target: {fileID: 5097239240260754256, guid: 66a807bac88064a4d8bf0be48824b952, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6611097149470563963, guid: 66a807bac88064a4d8bf0be48824b952, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.5
@@ -4341,10 +4317,6 @@ PrefabInstance:
     - target: {fileID: 6611097149470563963, guid: 66a807bac88064a4d8bf0be48824b952, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6964677355996263118, guid: 66a807bac88064a4d8bf0be48824b952, type: 3}
-      propertyPath: _snapEveryFrameInEditor
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5307,10 +5279,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -1957165260101607348, guid: 98ec539d9c544984bbba7c1261e38447, type: 3}
-      propertyPath: _isOn
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3670032458574494317, guid: 98ec539d9c544984bbba7c1261e38447, type: 3}
       propertyPath: m_Name
       value: Wall_Inner
@@ -6791,10 +6759,6 @@ PrefabInstance:
       propertyPath: _targetDoorId
       value: C_North
       objectReference: {fileID: 0}
-    - target: {fileID: 3267550753489264540, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
-      propertyPath: _spawnOffset.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6321202829830876943, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 17.5
@@ -6839,10 +6803,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Door_B_South
       objectReference: {fileID: 0}
-    - target: {fileID: 7736259875942562216, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
-      propertyPath: _snapEveryFrameInEditor
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6864,10 +6824,6 @@ PrefabInstance:
     - target: {fileID: -3042289259161926025, guid: 21ffe4797f05711468829c9811d1b22b, type: 3}
       propertyPath: _angleStep
       value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: -3042289259161926025, guid: 21ffe4797f05711468829c9811d1b22b, type: 3}
-      propertyPath: _rotateOnAwake
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -3042289259161926025, guid: 21ffe4797f05711468829c9811d1b22b, type: 3}
       propertyPath: _rotatePassengerOrientation
@@ -7047,14 +7003,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5150162742620693327, guid: 20e7c19bf1688ec4f80d0084df4486f1, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5150162742620693327, guid: 20e7c19bf1688ec4f80d0084df4486f1, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
-      value: 0.5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7192,10 +7140,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 525108800077004542, guid: c9a11bbff60da9a4090aa3371b34e5a1, type: 3}
-      propertyPath: _snapEveryFrameInEditor
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4359835278652725421, guid: c9a11bbff60da9a4090aa3371b34e5a1, type: 3}
       propertyPath: m_Name
       value: Mirror_Static
@@ -7294,15 +7238,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
-      propertyPath: _moveMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
       propertyPath: _endCell.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
-      propertyPath: _moveOnStart
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
@@ -7313,25 +7249,9 @@ PrefabInstance:
       propertyPath: _startCell.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
-      propertyPath: _blockingMask.m_Bits
-      value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 2055798494512801603, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
-      propertyPath: _passengerMask.m_Bits
-      value: 4294967295
-      objectReference: {fileID: 0}
     - target: {fileID: 2392920373371352802, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
       propertyPath: m_Name
       value: Floor_Move
-      objectReference: {fileID: 0}
-    - target: {fileID: 5634531216905049998, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
-      propertyPath: m_Size.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5634531216905049998, guid: 2b8b8b9e7829c59439a32f0ee59b32bb, type: 3}
-      propertyPath: m_Size.y
-      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7637,10 +7557,6 @@ PrefabInstance:
       propertyPath: _targetDoorId
       value: B_South
       objectReference: {fileID: 0}
-    - target: {fileID: 3267550753489264540, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
-      propertyPath: _spawnOffset.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6321202829830876943, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 17.5
@@ -7684,10 +7600,6 @@ PrefabInstance:
     - target: {fileID: 7332131063697487093, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
       propertyPath: m_Name
       value: Door_C_North
-      objectReference: {fileID: 0}
-    - target: {fileID: 7736259875942562216, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
-      propertyPath: _snapEveryFrameInEditor
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9856,10 +9768,6 @@ PrefabInstance:
       propertyPath: '_targets.Array.data[0]'
       value: 
       objectReference: {fileID: 460776195}
-    - target: {fileID: 4139208225493665907, guid: 9394ead6151c3de40a0f81d9a5dd7e1d, type: 3}
-      propertyPath: BlocksMovement
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7480382221445034997, guid: 9394ead6151c3de40a0f81d9a5dd7e1d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.5
@@ -9961,22 +9869,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5150162742620693327, guid: 20e7c19bf1688ec4f80d0084df4486f1, type: 3}
-      propertyPath: m_SortingLayer
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 5150162742620693327, guid: 20e7c19bf1688ec4f80d0084df4486f1, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -759865985
-      objectReference: {fileID: 0}
-    - target: {fileID: 5150162742620693327, guid: 20e7c19bf1688ec4f80d0084df4486f1, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5150162742620693327, guid: 20e7c19bf1688ec4f80d0084df4486f1, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
-      value: 0.5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -10005,14 +9897,6 @@ PrefabInstance:
     - target: {fileID: 3267550753489264540, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
       propertyPath: _targetDoorId
       value: B_West
-      objectReference: {fileID: 0}
-    - target: {fileID: 3267550753489264540, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
-      propertyPath: _spawnOffset.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4498040151468168662, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
-      propertyPath: _type
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4498040151468168662, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
       propertyPath: _basicStartsOpen
@@ -10061,10 +9945,6 @@ PrefabInstance:
     - target: {fileID: 7332131063697487093, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
       propertyPath: m_Name
       value: Door_A_East
-      objectReference: {fileID: 0}
-    - target: {fileID: 7736259875942562216, guid: 470600efbef3ef24c88286e481f21ca2, type: 3}
-      propertyPath: _snapEveryFrameInEditor
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

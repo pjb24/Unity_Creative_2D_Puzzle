@@ -1,9 +1,8 @@
 ///
 /// Door (Parent)
-///  ├─ DoorPortal   [Trigger Collider, GridObject]
-///  └─ VisualRoot
-///      └─ DoorCore [Blocking Collider(Non-Trigger), SpriteRenderer(placeholder)]
-///      └─ DoorVisual [Animator 등 연출 전담]
+///  ├─ DoorCore [Blocking Collider(Non-Trigger), SpriteRenderer(placeholder)]
+///  └─ DoorPortal   [Trigger Collider, GridObject]
+///  └─ DoorVisual [Animator 등 연출 전담]
 /// 
 /// DoorVisual: 아트/애니/사운드 전담. 로직은 DoorCore가 전부 담당.
 /// - 현 단계: placeholder 색은 DoorCore가 처리하므로 여기서는 Animator/FX 훅만.

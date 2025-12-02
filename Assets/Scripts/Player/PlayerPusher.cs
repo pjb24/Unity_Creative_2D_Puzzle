@@ -49,7 +49,7 @@ public class PlayerPusher : MonoBehaviour
     /// - 이미 거울을 밀고 있으면 해제.
     /// - 아니면 앞 타일에서 PushableMirror 찾고 BeginPush 시도.
     /// </summary>
-    public void HandleInteract()
+    public void HandleInteract(PushableMirror target = null)
     {
         // 이미 밀고 있는 상태라면 해제
         if (_attachedMirror != null)
@@ -60,12 +60,17 @@ public class PlayerPusher : MonoBehaviour
             return;
         }
 
-        var cell = GetFrontCell();
-        var occupancy = GridOccupancy.Instance;
-        var obj = occupancy.GetOccupant(cell);
-        if (obj == null) return;
+        PushableMirror mirror = target;
+        if (mirror == null)
+        {
+            var cell = GetFrontCell();
+            var occupancy = GridOccupancy.Instance;
+            var obj = occupancy.GetOccupant(cell);
+            if (obj == null) return;
 
-        var mirror = obj.GetComponent<PushableMirror>();
+            mirror = obj.GetComponent<PushableMirror>();
+        }
+
         if (mirror == null) return;
 
         if (mirror.BeginPush(transform, _facingDir))

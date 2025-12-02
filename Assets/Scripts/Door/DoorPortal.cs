@@ -1,9 +1,8 @@
 ///
 /// Door (Parent)
-///  ├─ DoorPortal   [Trigger Collider, GridObject]
-///  └─ VisualRoot
-///      └─ DoorCore [Blocking Collider(Non-Trigger), SpriteRenderer(placeholder)]
-///      └─ DoorVisual [Animator 등 연출 전담]
+///  ├─ DoorCore [Blocking Collider(Non-Trigger), SpriteRenderer(placeholder)]
+///  └─ DoorPortal   [Trigger Collider, GridObject]
+///  └─ DoorVisual [Animator 등 연출 전담]
 /// 
 /// 방 전환 전용(트리거 콜라이더)
 ///
