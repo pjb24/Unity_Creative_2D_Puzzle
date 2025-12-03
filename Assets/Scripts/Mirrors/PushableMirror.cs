@@ -131,7 +131,7 @@ public class PushableMirror : MonoBehaviour, IInteractable
         var targetCell = currentCell + deltaCell;
 
         // 앞 셀에 벽/장치 등으로 "막혀 있는지"만 체크
-        if (GridOccupancy.Instance.IsOccupied(targetCell))
+        if (GridOccupancy.Instance.IsBlockedCell(targetCell))
         {
             Debug.Log($"PushableMirror {name}: targetCell {targetCell} 막힘, 이동 불가.");
             return false;
